@@ -34,6 +34,7 @@ st.markdown("""
         background-color: #f0f4f8; /* Same as expander background */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin-bottom: 20px;
+        text-align: center; /* Center align text inside the card */
     }
 </style>
 """, unsafe_allow_html=True)
