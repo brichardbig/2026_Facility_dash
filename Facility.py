@@ -13,7 +13,12 @@ st.title("📊 2026 Facility Performance Dashboard")
 # ----------------------------
 # Load Data
 # ----------------------------
-df = pd.read_excel('facility_data_2026.xlsx')
+@st.cache_data
+def load_data(path):
+    df = pd.read_excel(path)
+    return df
+
+df = load_data('facility_data_2026.xlsx')
 
 # ----------------------------
 # Preprocessing
@@ -28,28 +33,34 @@ cols_to_round = [
 ]
 df[cols_to_round] = df[cols_to_round].astype('Int64')
 
+# Sort months chronologically (if month names)
+month_order = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+df['Month'] = pd.Categorical(df['Month'], categories=month_order, ordered=True)
+df = df.sort_values('Month')
+
 # ----------------------------
-# Custom CSS – uniform card size
+# Custom CSS – blue rounded cards
 # ----------------------------
 st.markdown("""
 <style>
 .metric-card {
-    background-color: #f0f4f8;
+    background-color: #1D4ED8;
     padding: 20px 16px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     text-align: center;
-    height: 150px;                  /* fixed height – main fix */
+    height: 150px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     margin-bottom: 16px;
+    color: white;
 }
 
 .metric-title {
     font-size: 0.95rem;
-    color: #6b7280;
+    color: #BFDBFE;
     margin-bottom: 10px;
     line-height: 1.2;
 }
@@ -57,15 +68,15 @@ st.markdown("""
 .metric-value {
     font-size: 1.9rem;
     font-weight: 700;
-    color: #111827;
+    color: white;
     line-height: 1.15;
-    min-height: 2.4rem;             /* reserves space for 1-2 lines */
+    min-height: 2.4rem;
 }
 
 .metric-value small,
 .metric-value span {
     font-size: 0.85rem;
-    color: #6b7280;
+    color: #BFDBFE;
     font-weight: 400;
 }
 
@@ -157,6 +168,7 @@ with tab1:
             text=filtered_df['Total_tested'],
             title="Total Tested by Month"
         )
+        fig1.update_traces(textposition='outside')
         fig1.add_hline(
             y=1673,
             line_dash="dash",
@@ -177,7 +189,8 @@ with tab1:
             x=filtered_df['Month'],
             y=filtered_df['Positives'],
             name="Positives",
-            text=filtered_df['Positives']
+            text=filtered_df['Positives'],
+            textposition='outside'
         ))
         fig2.add_trace(go.Scatter(
             x=filtered_df['Month'],
@@ -185,7 +198,8 @@ with tab1:
             name="Yield (%)",
             yaxis='y2',
             mode='lines+markers+text',
-            text=filtered_df['Yield'].round(1).astype(str) + "%"
+            text=filtered_df['Yield'].round(1).astype(str) + "%",
+            textposition='top center'
         ))
         fig2.update_layout(
             yaxis=dict(title="Positives"),
@@ -204,8 +218,10 @@ with tab1:
             x='Month',
             y='ICT_percentage',
             markers=True,
+            text=filtered_df['ICT_percentage'].round(1).astype(str) + "%",
             title="ICT Testing Percentage by Month"
         )
+        fig3.update_traces(textposition='top center')
         st.plotly_chart(fig3, use_container_width=True)
 
     # --------------------------------------------------
@@ -224,8 +240,10 @@ with tab1:
             y='Count',
             color='Testing_Type',
             barmode='group',
+            text='Count',
             title="ICT Testing Types"
         )
+        fig4.update_traces(textposition='outside')
         st.plotly_chart(fig4, use_container_width=True)
 
     # --------------------------------------------------
@@ -238,8 +256,10 @@ with tab1:
             x='Month',
             y='Linkage',
             markers=True,
+            text=filtered_df['Linkage'].round(1).astype(str) + "%",
             title="Linkage to Care (%)"
         )
+        fig5.update_traces(textposition='top center')
         st.plotly_chart(fig5, use_container_width=True)
 
     # --------------------------------------------------
@@ -248,7 +268,7 @@ with tab1:
     with st.expander("🧷 Condom Distribution by Month"):
         condom_table = filtered_df[['Month', 'condom_distribution']].copy()
         condom_table['Target'] = 16730
-        condom_table['% Achieved'] = (condom_table['condom_distribution'] / 16730) * 100
+        condom_table['% Achieved'] = (condom_table['condom_distribution'] / 16730 * 100).round(1)
         st.dataframe(condom_table, use_container_width=True)
 
 # ==================================================
@@ -300,8 +320,10 @@ with tab2:
             x='Month',
             y='Net_Growth',
             markers=True,
+            text=filtered_df['Net_Growth'],
             title="Net Growth by Month"
         )
+        fig6.update_traces(textposition='top center')
         st.plotly_chart(fig6, use_container_width=True)
 
     # --------------------------------------------------
@@ -314,25 +336,25 @@ with tab2:
             x='Month',
             y=['LTFU', 'TO', 'Dead', 'Total_Attrition'],
             barmode='group',
+            text=filtered_df[['LTFU','TO','Dead','Total_Attrition']],
             title="Attrition by Month"
         )
+        fig7.update_traces(textposition='outside')
         st.plotly_chart(fig7, use_container_width=True)
 
     # --------------------------------------------------
-    # Net Growth Table
+    # Net Growth Table (new)
     # --------------------------------------------------
+    net_growth_table = filtered_df[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth']].copy()
+    net_growth_table['Target'] = 45
+    net_growth_table['% Achieved'] = (net_growth_table['Net_Growth'] / net_growth_table['Target'] * 100).round(1)
+
     with st.expander("📋 Net Growth Details", expanded=True):
-        # Calculate % Achieved vs Target
-        net_growth_table['% Achieved'] = (net_growth_table['Net_Growth'] / net_growth_table['Target'] * 100).round(1)
-    
-        # Display the table
         st.dataframe(
             net_growth_table[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth', 'Target', '% Achieved']],
             use_container_width=True
-    )
+        )
 
-
-    
     # --------------------------------------------------
     # Viral Suppression
     # --------------------------------------------------
@@ -342,8 +364,10 @@ with tab2:
             x='Month',
             y='suppression',
             markers=True,
+            text=filtered_df['suppression'].round(1).astype(str) + "%",
             title="Viral Suppression by Month"
         )
+        fig8.update_traces(textposition='top center')
         fig8.add_hline(y=95, line_dash="dash", line_color="red")
         st.plotly_chart(fig8, use_container_width=True)
 
@@ -393,6 +417,3 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
-
-
-
