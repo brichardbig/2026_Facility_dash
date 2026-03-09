@@ -286,7 +286,6 @@ with tab2:
     with col5:
         metric_card("Viral Suppression (%)", f"{avg_suppression:.1f}%")
 
-    
     # --------------------------------------------------
     # Net Growth Calculation
     # --------------------------------------------------
@@ -296,29 +295,21 @@ with tab2:
         filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']
     )
 
-    
     # --------------------------------------------------
-    # Net Growth Table
+    # Net Growth Table in Expander
     # --------------------------------------------------
-    try:
-        net_growth_table = filtered_df[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth']]
-        net_growth_table['Target'] = 45  # Add target column
-        st.subheader("Net Growth Table")
-        st.dataframe(net_growth_table, use_container_width=True)
-    except KeyError as e:
-        st.error(f"KeyError: {e}. Please check the column names in filtered_df.")
+    with st.expander("Net Growth Table", expanded=False):
+        try:
+            net_growth_table = filtered_df[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth']]
+            net_growth_table['Target'] = 45  # Add target column
+            st.dataframe(net_growth_table, use_container_width=True)
+        except KeyError as e:
+            st.error(f"KeyError: {e}. Please check the column names in filtered_df.")
 
-    
-    
     # --------------------------------------------------
     # Net Growth
     # --------------------------------------------------
     with st.expander("Net Growth by Month", expanded=True):
-        filtered_df['Net_Growth'] = (
-            filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']
-        ) - (
-            filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']
-        )
         fig6 = px.area(
             filtered_df,
             x='Month',
@@ -342,7 +333,6 @@ with tab2:
         )
         st.plotly_chart(fig7, use_container_width=True)
 
-       
     # --------------------------------------------------
     # Viral Suppression
     # --------------------------------------------------
@@ -403,6 +393,3 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
-
-
-
