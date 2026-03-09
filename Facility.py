@@ -18,6 +18,17 @@ df[cols_to_round] = df[cols_to_round].astype('Int64')
 st.set_page_config(page_title="2026 Performance Dashboard", layout="wide")
 st.title("📊 2026 Facility Performance Dashboard")
 
+# Custom CSS for styling
+st.markdown("""
+<style>
+    .stMetric { font-size: 1.5rem; }
+    .stExpander { background-color: #f0f4f8; }
+    .stButton { background-color: #0056b3; color: white; }
+    .stButton:hover { background-color: #004494; }
+    .stDataFrame { border: 1px solid #e0e0e0; border-radius: 8px; }
+</style>
+""", unsafe_allow_html=True)
+
 # Sidebar filters
 st.sidebar.header("Filters")
 selected_months = st.sidebar.multiselect("Select Months", df['Month'].unique(), default=df['Month'].unique())
@@ -263,10 +274,9 @@ with tab2:
     
     with col_g2:
         with st.expander("🎯 CRPDDP Progress"):
-
             st.plotly_chart(plot_gauge("CRPDDP Progress", actual=267, target=700, color="green"), use_container_width=True)
 
-    # ────────────────────────────────────────────────
+# ────────────────────────────────────────────────
 # Footer / Copyright
 # ────────────────────────────────────────────────
 st.markdown("---")  # horizontal line (optional but looks nice)
@@ -285,5 +295,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
