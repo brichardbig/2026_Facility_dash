@@ -474,4 +474,5 @@ st.markdown("""
 <div style="text-align:center; color:#6b7280; font-size:0.95rem; margin-top:40px; padding:20px 0;">
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
-""", unsafe_allow_html=True) can u improve the styling
+""", unsafe_allow_html=True)
+
