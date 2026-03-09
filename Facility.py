@@ -319,16 +319,16 @@ with tab2:
         st.plotly_chart(fig7, use_container_width=True)
 
     # --------------------------------------------------
-# Net Growth Table
-# --------------------------------------------------
-with st.expander("📋 Net Growth Details", expanded=True):
-    # Calculate % Achieved vs Target
-    net_growth_table['% Achieved'] = (net_growth_table['Net_Growth'] / net_growth_table['Target'] * 100).round(1)
+    # Net Growth Table
+    # --------------------------------------------------
+    with st.expander("📋 Net Growth Details", expanded=True):
+        # Calculate % Achieved vs Target
+        net_growth_table['% Achieved'] = (net_growth_table['Net_Growth'] / net_growth_table['Target'] * 100).round(1)
     
-    # Display the table
-    st.dataframe(
-        net_growth_table[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth', 'Target', '% Achieved']],
-        use_container_width=True
+        # Display the table
+        st.dataframe(
+            net_growth_table[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth', 'Target', '% Achieved']],
+            use_container_width=True
     )
 
     # --------------------------------------------------
@@ -391,4 +391,5 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
+
 
