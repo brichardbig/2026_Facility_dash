@@ -296,9 +296,7 @@ with tab2:
         filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']
     )
 
-    # Check if the columns exist in filtered_df
-    st.write(filtered_df.columns)  # Debugging line to check available columns
-
+    
     # --------------------------------------------------
     # Net Growth Table
     # --------------------------------------------------
@@ -405,5 +403,6 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
+
 
 
