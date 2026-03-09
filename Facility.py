@@ -146,7 +146,7 @@ with tab1:
         metric_card("Total ICT", f"{total_ict:,}<br><span style='font-size:14px'>({ict_percent:.1f}%)</span>")
 
     with col5:
-        metric_card("Condoms Distributed",f"{total_condoms:,}",16730-total_condoms <br><span style='font-size:14px;color:gray'>({ict_percent:.1f}%)</span>"
+        metric_card("Condoms Distributed",f"{total_condoms:,}",16730-total_condoms)
     )
 
 # --------------------------------------------------
@@ -417,6 +417,7 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """,unsafe_allow_html=True)
+
 
 
 
