@@ -71,23 +71,33 @@ font-size:0.85rem;
 # ----------------------------
 # Metric Card Function
 # ----------------------------
-def metric_card(title,value,delta=None):
 
-    delta_html=""
-
+def metric_card(title, value, delta=None):
+    delta_html = ""
     if delta is not None:
-        if delta>=0:
-            delta_html=f'<div class="metric-delta-positive">▲ {abs(delta):,}</div>'
-        else:
-            delta_html=f'<div class="metric-delta-negative">▼ {abs(delta):,}</div>'
+        color = "green" if delta >= 0 else "red"
+        delta_html = f"<p style='color:{color};font-size:14px'>{delta:+}</p>"
 
-    st.markdown(f"""
-    <div class="metric-card">
-        <div class="metric-title">{title}</div>
-        <div class="metric-value">{value}</div>
-        {delta_html}
-    </div>
-    """,unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div style="
+            background:#f8f9fa;
+            padding:20px;
+            border-radius:10px;
+            text-align:center;
+            box-shadow:0 1px 3px rgba(0,0,0,0.1);
+            min-height:120px;        /* ensures all cards have same height */
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+        ">
+            <h4>{title}</h4>
+            <h2 style="margin:5px 0;">{value}</h2>
+            {delta_html}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ----------------------------
 # Sidebar Filter
@@ -136,7 +146,8 @@ with tab1:
         metric_card("Total ICT", f"{total_ict:,}<br><span style='font-size:14px'>({ict_percent:.1f}%)</span>")
 
     with col5:
-        metric_card("Condoms Distributed",f"{total_condoms:,}",16730-total_condoms)
+        metric_card("Condoms Distributed",f"{total_condoms:,}",16730-total_condoms)<br><span style='font-size:14px;color:gray'>({ict_percent:.1f}%)</span>"
+    )
 
 # --------------------------------------------------
 # Testing Trends
@@ -406,4 +417,5 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """,unsafe_allow_html=True)
+
 
