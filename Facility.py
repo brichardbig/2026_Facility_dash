@@ -288,13 +288,29 @@ with tab2:
 
     
     # --------------------------------------------------
+    # Net Growth Calculation
+    # --------------------------------------------------
+    filtered_df['Net_Growth'] = (
+        filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']
+    ) - (
+        filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']
+    )
+
+    # Check if the columns exist in filtered_df
+    st.write(filtered_df.columns)  # Debugging line to check available columns
+
+    # --------------------------------------------------
     # Net Growth Table
     # --------------------------------------------------
-    net_growth_table = filtered_df[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth']]
-    net_growth_table['Target'] = 45  # Add target column
-    st.subheader("Net Growth Table")
-    st.dataframe(net_growth_table, use_container_width=True)
+    try:
+        net_growth_table = filtered_df[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth']]
+        net_growth_table['Target'] = 45  # Add target column
+        st.subheader("Net Growth Table")
+        st.dataframe(net_growth_table, use_container_width=True)
+    except KeyError as e:
+        st.error(f"KeyError: {e}. Please check the column names in filtered_df.")
 
+    
     
     # --------------------------------------------------
     # Net Growth
@@ -389,4 +405,5 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
+
 
