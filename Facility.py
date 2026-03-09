@@ -25,7 +25,7 @@ df[cols_to_round] = df[cols_to_round].astype('Int64')
 # ---------------------------- Custom CSS ----------------------------
 st.markdown("""
 <style>
-/* ------------------ Metric Cards ------------------ */
+/* Metric Cards */
 .metric-card {
     background: linear-gradient(135deg, #e0f2fe, #bae6fd);
     padding: 20px 16px;
@@ -71,10 +71,8 @@ st.markdown("""
     margin-top: 6px;
 }
 
-/* ------------------ Tabs Styling ------------------ */
-.stTabs {
-    margin-bottom: 20px;
-}
+/* Tabs Styling */
+.stTabs { margin-bottom: 20px; }
 .stTabs [role="tablist"] {
     border-bottom: 2px solid #cbd5e1;
     display: flex;
@@ -100,7 +98,7 @@ st.markdown("""
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* ------------------ Expander Styling ------------------ */
+/* Expander Styling */
 .stExpander > div:first-child {
     background-color: #f1f5f9;
     border-radius: 12px;
@@ -111,7 +109,7 @@ st.markdown("""
     background-color: #e2e8f0;
 }
 
-/* ------------------ Tab Pane Styling ------------------ */
+/* Tab Pane Styling */
 .stTabPane {
     background-color: #ffffff;
     border-radius: 12px;
@@ -119,10 +117,8 @@ st.markdown("""
     box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
 
-/* ------------------ Footer ------------------ */
-footer {
-    visibility: hidden;
-}
+/* Footer Styling */
+footer { visibility: hidden; }
 .custom-footer {
     text-align: center;
     color: #64748b;
@@ -167,12 +163,12 @@ tab1, tab2 = st.tabs(["🩺 Prevention", "💊 Care & Treatment"])
 # ==================================================
 with tab1:
     st.header("Prevention Metrics")
-    total_tested    = filtered_df['Total_tested'].sum()
+    total_tested = filtered_df['Total_tested'].sum()
     total_positives = filtered_df['Positives'].sum()
-    avg_yield       = (total_positives / total_tested * 100) if total_tested > 0 else 0
-    total_ict       = filtered_df['ICT_tested'].sum()
-    ict_percent     = (total_ict / total_tested * 100) if total_tested > 0 else 0
-    total_condoms   = filtered_df['condom_distribution'].sum()
+    avg_yield = (total_positives / total_tested * 100) if total_tested > 0 else 0
+    total_ict = filtered_df['ICT_tested'].sum()
+    ict_percent = (total_ict / total_tested * 100) if total_tested > 0 else 0
+    total_condoms = filtered_df['condom_distribution'].sum()
 
     col1, col2, col3, col4 = st.columns(4)
     with col1: metric_card("Total Tested", f"{total_tested:,}")
@@ -180,45 +176,66 @@ with tab1:
     with col3: metric_card("Total ICT", f"{total_ict:,}<br><small>({ict_percent:.1f}% of tested)</small>")
     with col4: metric_card("Condoms Distributed", f"{total_condoms:,}")
 
+    # Testing Trends
     with st.expander("📈 Testing Trends by Month", expanded=True):
-        fig1 = px.bar(filtered_df, x='Month', y='Total_tested', text=filtered_df['Total_tested'],
+        fig1 = px.bar(filtered_df, x='Month', y='Total_tested', text='Total_tested',
+                      title="Total Tested by Month",
                       color_discrete_sequence=px.colors.sequential.Teal)
-        fig1.add_hline(y=1673, line_dash="dash", line_color="red", annotation_text="Target (1,673)")
+        fig1.update_traces(textposition='outside')
+        fig1.update_layout(yaxis=dict(title="Total Tested"))
         st.plotly_chart(fig1, use_container_width=True)
 
+    # Positives & Yield
     with st.expander("Positives & Yield"):
         filtered_df['Yield'] = (filtered_df['Positives'] / filtered_df['Total_tested'] * 100)\
                                .replace([np.inf, -np.inf], 0).fillna(0)
         fig2 = go.Figure()
-        fig2.add_trace(go.Bar(x=filtered_df['Month'], y=filtered_df['Positives'], name="Positives",
-                              text=filtered_df['Positives']))
-        fig2.add_trace(go.Scatter(x=filtered_df['Month'], y=filtered_df['Yield'], name="Yield (%)",
-                                  yaxis='y2', mode='lines+markers+text',
-                                  text=filtered_df['Yield'].round(1).astype(str) + "%"))
+        fig2.add_trace(go.Bar(
+            x=filtered_df['Month'], y=filtered_df['Positives'], name="Positives",
+            text=filtered_df['Positives'], textposition='outside'
+        ))
+        fig2.add_trace(go.Scatter(
+            x=filtered_df['Month'], y=filtered_df['Yield'], name="Yield (%)",
+            yaxis='y2', mode='lines+markers+text',
+            text=filtered_df['Yield'].round(1).astype(str)+"%",
+            textposition='top center'
+        ))
         fig2.update_layout(yaxis=dict(title="Positives"),
                            yaxis2=dict(title="Yield (%)", overlaying='y', side='right'),
                            title="Positives and Yield by Month")
         st.plotly_chart(fig2, use_container_width=True)
 
+    # ICT %
     with st.expander("ICT - HTS Percentage"):
         filtered_df['ICT_percentage'] = (filtered_df['ICT_tested'] / filtered_df['Total_tested'] * 100)
         fig3 = px.line(filtered_df, x='Month', y='ICT_percentage', markers=True,
-                       title="ICT Testing Percentage by Month", color_discrete_sequence=['#3b82f6'])
+                       text=filtered_df['ICT_percentage'].round(1).astype(str)+"%",
+                       title="ICT Testing Percentage by Month",
+                       color_discrete_sequence=['#3b82f6'])
+        fig3.update_traces(textposition='top center')
         st.plotly_chart(fig3, use_container_width=True)
 
+    # ICT Types
     with st.expander("ICT Testing Types"):
         df_long = filtered_df.melt(id_vars='Month', value_vars=['ICT_tested', 'APN_ict', 'SNS'],
                                    var_name='Testing_Type', value_name='Count')
         fig4 = px.bar(df_long, x='Month', y='Count', color='Testing_Type', barmode='group',
-                      title="ICT Testing Types", color_discrete_sequence=px.colors.qualitative.Set2)
+                      text='Count', text_auto=True, title="ICT Testing Types",
+                      color_discrete_sequence=px.colors.qualitative.Set2)
+        fig4.update_traces(textposition='outside')
         st.plotly_chart(fig4, use_container_width=True)
 
+    # Linkage
     with st.expander("Linkage to Care (%)"):
         filtered_df['Linkage'] = (filtered_df['Linked'] / filtered_df['Positives'] * 100)
         fig5 = px.line(filtered_df, x='Month', y='Linkage', markers=True,
-                       title="Linkage to Care (%)", color_discrete_sequence=['#16a34a'])
+                       text=filtered_df['Linkage'].round(1).astype(str)+"%",
+                       title="Linkage to Care (%)",
+                       color_discrete_sequence=['#16a34a'])
+        fig5.update_traces(textposition='top center')
         st.plotly_chart(fig5, use_container_width=True)
 
+    # Condom Table
     with st.expander("🧷 Condom Distribution by Month"):
         condom_table = filtered_df[['Month', 'condom_distribution']].copy()
         condom_table['Target'] = 16730
@@ -248,28 +265,40 @@ with tab2:
     filtered_df['Net_Growth'] = (filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']) - \
                                 (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead'])
 
+    # Net Growth Table
     with st.expander("Net Growth Table", expanded=False):
-        net_growth_table = filtered_df[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth']]
+        net_growth_table = filtered_df[['Month','Newly_diagnosed','TI','Returned','LTFU','TO','Dead','Net_Growth']]
         net_growth_table['Target'] = 45
         st.dataframe(net_growth_table, use_container_width=True)
 
+    # Net Growth Chart
     with st.expander("Net Growth by Month", expanded=True):
-        fig6 = px.area(filtered_df, x='Month', y='Net_Growth', markers=True, title="Net Growth by Month",
+        fig6 = px.area(filtered_df, x='Month', y='Net_Growth', markers=True,
+                       text=filtered_df['Net_Growth'], title="Net Growth by Month",
                        color_discrete_sequence=['#3b82f6'])
+        fig6.update_traces(textposition='top center')
         st.plotly_chart(fig6, use_container_width=True)
 
+    # Attrition
     with st.expander("Attrition by Month"):
         filtered_df['Total_Attrition'] = filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']
-        fig7 = px.bar(filtered_df, x='Month', y=['LTFU','TO','Dead','Total_Attrition'], barmode='group',
-                      color_discrete_sequence=px.colors.qualitative.Set3, title="Attrition by Month")
+        fig7 = px.bar(filtered_df, x='Month', y=['LTFU','TO','Dead','Total_Attrition'],
+                      barmode='group', text_auto=True, title="Attrition by Month",
+                      color_discrete_sequence=px.colors.qualitative.Set3)
+        fig7.update_traces(textposition='outside')
         st.plotly_chart(fig7, use_container_width=True)
 
+    # Viral Suppression
     with st.expander("Viral Suppression by Month"):
         fig8 = px.line(filtered_df, x='Month', y='suppression', markers=True,
-                       title="Viral Suppression by Month", color_discrete_sequence=['#16a34a'])
+                       text=filtered_df['suppression'].round(1).astype(str)+"%",
+                       title="Viral Suppression by Month",
+                       color_discrete_sequence=['#16a34a'])
+        fig8.update_traces(textposition='top center')
         fig8.add_hline(y=95, line_dash="dash", line_color="red")
         st.plotly_chart(fig8, use_container_width=True)
 
+    # Gauges
     col_g1, col_g2 = st.columns(2)
     def plot_gauge(title, actual, target, color):
         fig = go.Figure(go.Indicator(
