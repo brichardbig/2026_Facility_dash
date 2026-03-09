@@ -39,7 +39,7 @@ st.markdown("""
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     text-align: center;
-    height: 150px;
+    height: 150px;                  /* fixed height – main fix */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -59,7 +59,7 @@ st.markdown("""
     font-weight: 700;
     color: #111827;
     line-height: 1.15;
-    min-height: 2.4rem;
+    min-height: 2.4rem;             /* reserves space for 1-2 lines */
 }
 
 .metric-value small,
@@ -146,6 +146,9 @@ with tab1:
     with col4:
         metric_card("Condoms Distributed", f"{total_condoms:,}")
 
+    # --------------------------------------------------
+    # Testing Trends
+    # --------------------------------------------------
     with st.expander("📈 Testing Trends by Month", expanded=True):
         fig1 = px.bar(
             filtered_df,
@@ -162,6 +165,9 @@ with tab1:
         )
         st.plotly_chart(fig1, use_container_width=True)
 
+    # --------------------------------------------------
+    # Positives & Yield
+    # --------------------------------------------------
     with st.expander("Positives & Yield"):
         filtered_df['Yield'] = (filtered_df['Positives'] / filtered_df['Total_tested'] * 100)\
             .replace([np.inf, -np.inf], 0).fillna(0)
@@ -188,6 +194,9 @@ with tab1:
         )
         st.plotly_chart(fig2, use_container_width=True)
 
+    # --------------------------------------------------
+    # ICT %
+    # --------------------------------------------------
     with st.expander("ICT - HTS Percentage"):
         filtered_df['ICT_percentage'] = (filtered_df['ICT_tested'] / filtered_df['Total_tested'] * 100)
         fig3 = px.line(
@@ -199,6 +208,9 @@ with tab1:
         )
         st.plotly_chart(fig3, use_container_width=True)
 
+    # --------------------------------------------------
+    # ICT TYPES
+    # --------------------------------------------------
     with st.expander("ICT Testing Types"):
         df_long = filtered_df.melt(
             id_vars='Month',
@@ -216,6 +228,9 @@ with tab1:
         )
         st.plotly_chart(fig4, use_container_width=True)
 
+    # --------------------------------------------------
+    # Linkage
+    # --------------------------------------------------
     with st.expander("Linkage to Care (%)"):
         filtered_df['Linkage'] = (filtered_df['Linked'] / filtered_df['Positives'] * 100)
         fig5 = px.line(
@@ -227,6 +242,9 @@ with tab1:
         )
         st.plotly_chart(fig5, use_container_width=True)
 
+    # --------------------------------------------------
+    # Condom Table
+    # --------------------------------------------------
     with st.expander("🧷 Condom Distribution by Month"):
         condom_table = filtered_df[['Month', 'condom_distribution']].copy()
         condom_table['Target'] = 16730
@@ -239,63 +257,13 @@ with tab1:
 with tab2:
     st.header("Care and Treatment Metrics")
 
-    # ── Net Growth Breakdown Table ── (placed first)
-    st.subheader("Net Growth Breakdown by Month")
-    st.caption("Net Growth = (Newly Diagnosed + TI + Returned) − (LTFU + TO + Dead)")
-
-    # Calculate Net Growth
-    filtered_df = filtered_df.copy()  # avoid SettingWithCopyWarning
-    filtered_df['Net_Growth'] = (
-        filtered_df['Newly_diagnosed'] +
-        filtered_df['TI'] +
-        filtered_df['Returned']
-    ) - (
-        filtered_df['LTFU'] +
-        filtered_df['TO'] +
-        filtered_df['Dead']
-    )
-
-    # Prepare table
-    net_growth_table = filtered_df[[
-        'Month',
-        'Newly_diagnosed',
-        'TI',
-        'Returned',
-        'LTFU',
-        'TO',
-        'Dead',
-        'Net_Growth'
-    ]].copy()
-
-    net_growth_table = net_growth_table.rename(columns={
-        'Newly_diagnosed': 'Newly Diagnosed',
-        'TI': 'Transferred In',
-        'Returned': 'Returned to Care',
-        'LTFU': 'Lost to Follow-up',
-        'TO': 'Transferred Out',
-        'Dead': 'Dead',
-        'Net_Growth': 'Net Growth'
-    })
-
-    net_growth_table['Target'] = 45
-
-    # Display styled table
-    st.dataframe(
-        net_growth_table.style
-            .format(na_rep="—")
-            .format("{:,}", subset=[
-                'Newly Diagnosed', 'TI', 'Returned',
-                'LTFU', 'TO', 'Dead', 'Net Growth'
-            ])
-            .map(lambda x: 'color: green' if x > 0 else 'color: red' if x < 0 else 'color: gray',
-                 subset=['Net Growth']),
-        use_container_width=True,
-        hide_index=True
-    )
-
-    # ── KPI cards ──
     actual_census = 6712
-    total_net_growth = filtered_df['Net_Growth'].sum()
+    net_growth = (
+        filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']
+    ).sum() - (
+        filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']
+    ).sum()
+    
     total_ltfu = filtered_df['LTFU'].sum()
     total_attrition = (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']).sum()
     ltfu_percent = (total_ltfu / total_attrition * 100) if total_attrition != 0 else 0
@@ -307,7 +275,7 @@ with tab2:
         metric_card("Actual Census", f"{actual_census:,}")
 
     with col2:
-        metric_card("Net Growth", f"{total_net_growth:,}")
+        metric_card("Net Growth", f"{net_growth:,}")
 
     with col3:
         metric_card("LTFU", f"{total_ltfu:,}")
@@ -319,9 +287,14 @@ with tab2:
         metric_card("Viral Suppression (%)", f"{avg_suppression:.1f}%")
 
     # --------------------------------------------------
-    # Net Growth Chart
+    # Net Growth
     # --------------------------------------------------
     with st.expander("Net Growth by Month", expanded=True):
+        filtered_df['Net_Growth'] = (
+            filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']
+        ) - (
+            filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']
+        )
         fig6 = px.area(
             filtered_df,
             x='Month',
