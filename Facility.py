@@ -117,9 +117,11 @@ with tab1:
     total_tested=filtered_df['Total_tested'].sum()
     total_positives=filtered_df['Positives'].sum()
     avg_yield=(total_positives/total_tested*100) if total_tested>0 else 0
+    total_ict = filtered_df['ICT_tested'].sum()
+    ict_percent = (total_ict / total_tested * 100) if total_tested > 0 else 0
     total_condoms=filtered_df['condom_distribution'].sum()
 
-    col1,col2,col3,col4=st.columns(4)
+    col1,col2,col3,col4,col5 = st.columns(5)
 
     with col1:
         metric_card("Total Tested",f"{total_tested:,}",1673-total_tested)
@@ -131,6 +133,9 @@ with tab1:
         metric_card("Average Yield (%)",f"{avg_yield:.1f}%")
 
     with col4:
+        metric_card("Total ICT", f"{total_ict:,}<br><span style='font-size:14px'>({ict_percent:.1f}%)</span>")
+
+    with col5:
         metric_card("Condoms Distributed",f"{total_condoms:,}",16730-total_condoms)
 
 # --------------------------------------------------
@@ -401,3 +406,4 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """,unsafe_allow_html=True)
+
