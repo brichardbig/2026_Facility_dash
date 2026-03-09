@@ -1,4 +1,3 @@
-```python
 import pandas as pd
 import numpy as np
 import streamlit as st
@@ -246,3 +245,4 @@ st.markdown(
     unsafe_allow_html=True
 )
 ```
+
