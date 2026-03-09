@@ -286,6 +286,16 @@ with tab2:
     with col5:
         metric_card("Viral Suppression (%)", f"{avg_suppression:.1f}%")
 
+    
+    # --------------------------------------------------
+    # Net Growth Table
+    # --------------------------------------------------
+    net_growth_table = filtered_df[['Month', 'Newly_diagnosed', 'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'Net_Growth']]
+    net_growth_table['Target'] = 45  # Add target column
+    st.subheader("Net Growth Table")
+    st.dataframe(net_growth_table, use_container_width=True)
+
+    
     # --------------------------------------------------
     # Net Growth
     # --------------------------------------------------
@@ -379,3 +389,4 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
+
