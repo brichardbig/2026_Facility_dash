@@ -110,7 +110,7 @@ with tab1:
     ict_percent     = (total_ict / total_tested * 100) if total_tested > 0 else 0
     total_condoms   = filtered_df['condom_distribution'].sum()
 
-    col1, col2, col3, col4 = st.columns(5)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         metric_card("Total Tested", f"{total_tested:,}")
@@ -364,4 +364,5 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
+
 
