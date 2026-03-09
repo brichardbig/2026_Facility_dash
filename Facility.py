@@ -263,4 +263,25 @@ with tab2:
     
     with col_g2:
         with st.expander("🎯 CRPDDP Progress"):
+
             st.plotly_chart(plot_gauge("CRPDDP Progress", actual=267, target=700, color="green"), use_container_width=True)
+
+    # ────────────────────────────────────────────────
+# Footer / Copyright
+# ────────────────────────────────────────────────
+st.markdown("---")  # horizontal line (optional but looks nice)
+
+st.markdown(
+    """
+    <div style="
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-top: 40px;
+        padding: 20px 0;
+    ">
+        © 2026 Rich Data Analytics – Facility Performance Dashboard
+    </div>
+    """,
+    unsafe_allow_html=True
+)
