@@ -118,9 +118,8 @@ with tab1:
     with col2:
         metric_card("Total Positives", 
                     f"{total_positives:,}<br><span style='font-size:14px;color:gray'>({avg_yield:.1f}%)</span>")
-
     
-    with col5:
+    with col3:
         metric_card(
             "Total ICT",
             f"{total_ict:,}<br><span style='font-size:14px;color:gray'>({ict_percent:.1f}%)</span>"
@@ -364,5 +363,6 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
+
 
 
