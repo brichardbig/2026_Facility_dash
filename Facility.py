@@ -29,34 +29,50 @@ cols_to_round = [
 df[cols_to_round] = df[cols_to_round].astype('Int64')
 
 # ----------------------------
-# Custom CSS
+# Custom CSS – uniform card size
 # ----------------------------
 st.markdown("""
 <style>
 .metric-card {
     background-color: #f0f4f8;
-    padding: 18px;
+    padding: 20px 16px;
     border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     text-align: center;
-    margin-bottom: 10px;
+    height: 150px;                  /* fixed height – main fix */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
 }
+
 .metric-title {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #6b7280;
+    margin-bottom: 10px;
+    line-height: 1.2;
 }
+
 .metric-value {
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     font-weight: 700;
     color: #111827;
+    line-height: 1.15;
+    min-height: 2.4rem;             /* reserves space for 1-2 lines */
 }
-.metric-delta-positive {
-    color: green;
+
+.metric-value small,
+.metric-value span {
     font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 400;
 }
+
+.metric-delta-positive,
 .metric-delta-negative {
-    color: red;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    margin-top: 8px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -67,9 +83,9 @@ st.markdown("""
 def metric_card(title, value, delta=None):
     delta_html = ""
     if delta is not None:
-        color = "green" if delta >= 0 else "red"
-        delta_html = f"<p style='color:{color};font-size:14px'>{delta:+,}</p>"
-    
+        color_class = "metric-delta-positive" if delta >= 0 else "metric-delta-negative"
+        delta_html = f'<div class="{color_class}">{delta:+,}</div>'
+
     st.markdown(
         f"""
         <div class="metric-card">
@@ -116,20 +132,19 @@ with tab1:
         metric_card("Total Tested", f"{total_tested:,}")
 
     with col2:
-        metric_card("Total Positives", 
-                    f"{total_positives:,}<br><span style='font-size:14px;color:gray'>({avg_yield:.1f}%)</span>")
-    
+        metric_card(
+            "Total Positives",
+            f"{total_positives:,}<br><small>({avg_yield:.1f}% yield)</small>"
+        )
+
     with col3:
         metric_card(
             "Total ICT",
-            f"{total_ict:,}<br><span style='font-size:14px;color:gray'>({ict_percent:.1f}%)</span>"
+            f"{total_ict:,}<br><small>({ict_percent:.1f}% of tested)</small>"
         )
 
     with col4:
-        metric_card(
-            "Condoms Distributed",
-            f"{total_condoms:,}",
-            )
+        metric_card("Condoms Distributed", f"{total_condoms:,}")
 
     # --------------------------------------------------
     # Testing Trends
@@ -363,6 +378,3 @@ st.markdown("""
 © 2026 Rich Data Analytics – Facility Performance Dashboard
 </div>
 """, unsafe_allow_html=True)
-
-
-
