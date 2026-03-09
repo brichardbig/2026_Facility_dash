@@ -26,6 +26,15 @@ st.markdown("""
     .stButton { background-color: #0056b3; color: white; }
     .stButton:hover { background-color: #004494; }
     .stDataFrame { border: 1px solid #e0e0e0; border-radius: 8px; }
+    
+    /* Rounded cards for metrics */
+    .metric-card {
+        border-radius: 12px;
+        padding: 20px;
+        background-color: #f0f4f8; /* Same as expander background */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -48,11 +57,28 @@ with tab1:
     avg_yield = (total_positives / total_tested * 100) if total_tested > 0 else 0
     total_condoms = filtered_df['condom_distribution'].sum()
     
+    # Create rounded cards for metrics
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Tested", f"{total_tested:,}", delta=f"{1673 - total_tested}")
-    col2.metric("Total Positives", f"{total_positives:,}", delta=f"{53 - total_positives}")
-    col3.metric("Average Yield (%)", f"{avg_yield:.1f}%")
-    col4.metric("Condoms Distributed", f"{total_condoms:,}", delta=f"{16730 - total_condoms}")
+    
+    with col1:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Total Tested", f"{total_tested:,}", delta=f"{1673 - total_tested}")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Total Positives", f"{total_positives:,}", delta=f"{53 - total_positives}")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col3:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Average Yield (%)", f"{avg_yield:.1f}%")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col4:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Condoms Distributed", f"{total_condoms:,}", delta=f"{16730 - total_condoms}")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with st.expander("📈 Testing Trends by Month", expanded=True):
         fig1 = px.bar(
@@ -168,12 +194,33 @@ with tab2:
     ltfu_percent = (total_ltfu / total_attrition * 100) if total_attrition != 0 else 0
     avg_suppression = filtered_df['suppression'].mean()
 
+    # Create rounded cards for metrics
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric("Actual Census", f"{actual_census:,}")
-    col2.metric("Net Growth", f"{net_growth:,}")
-    col3.metric("LTFU", f"{total_ltfu:,}")
-    col4.metric("LTFU % of Attrition", f"{ltfu_percent:.1f}%")
-    col5.metric("Viral Suppression (%)", f"{avg_suppression:.1f}%")
+    
+    with col1:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Actual Census", f"{actual_census:,}")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Net Growth", f"{net_growth:,}")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col3:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("LTFU", f"{total_ltfu:,}")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col4:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("LTFU % of Attrition", f"{ltfu_percent:.1f}%")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col5:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Viral Suppression (%)", f"{avg_suppression:.1f}%")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with st.expander("Net Growth by Month", expanded=True):
         filtered_df['Net_Growth'] = (filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']) - \
