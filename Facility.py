@@ -178,12 +178,37 @@ with tab1:
 
     # Testing Trends
     
-    with st.expander("📈 Testing Trends by Month", expanded=True):
-        fig1 = px.bar(filtered_df, x='Month', y='Total_tested', text='Total_tested',
-                      title="Total Tested by Month",
-                      color_discrete_sequence=px.colors.sequential.Teal)
+    with st.expander("📈 HIV Testing Trends by Month", expanded=True):
+
+        fig1 = px.bar(
+            filtered_df,
+            x='Month',
+            y='Total_tested',
+            text='Total_tested',
+            title="HIV Testing Trends by Month",
+            color_discrete_sequence=px.colors.sequential.Teal
+        )
+
+    # Show labels above bars
         fig1.update_traces(textposition='outside')
-        fig1.update_layout(yaxis=dict(title="Total Tested"))
+
+    # Target line
+        fig1.add_hline(
+            y=1673,
+            line_dash="dash",
+            line_color="red",
+            line_width=3,
+            annotation_text="Target = 1,673",
+            annotation_position="top left"
+        )
+
+        fig1.update_layout(
+            yaxis_title="Number Tested",
+            xaxis_title="Month",
+            uniformtext_minsize=8,
+            uniformtext_mode='hide'
+        )
+
         st.plotly_chart(fig1, use_container_width=True)
 
     # Positives & Yield
@@ -329,6 +354,7 @@ st.markdown("""
 © 2026 Rich Data Analytics
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
