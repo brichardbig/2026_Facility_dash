@@ -177,13 +177,32 @@ with tab1:
     with col4: metric_card("Condoms Distributed", f"{total_condoms:,}")
 
     # Testing Trends
+    
     with st.expander("📈 Testing Trends by Month", expanded=True):
-        fig1 = px.bar(filtered_df, x='Month', y='Total_tested', text='Total_tested',
-                      title="Total Tested by Month",
-                      color_discrete_sequence=px.colors.sequential.Teal)
-        fig1.update_traces(textposition='outside')
-        fig1.update_layout(yaxis=dict(title="Total Tested"))
-        st.plotly_chart(fig1, use_container_width=True)
+    fig1 = px.bar(
+        filtered_df, 
+        x='Month', 
+        y='Total_tested', 
+        text='Total_tested',
+        title="Total Tested by Month",
+        color_discrete_sequence=px.colors.sequential.Teal
+    )
+    
+    fig1.update_traces(textposition='outside')
+    
+    fig1.update_layout(
+        yaxis=dict(title="Total Tested")
+    )
+    
+    # Add target line
+    fig1.add_hline(
+        y=1673, 
+        line_dash="dash", 
+        line_color="red",
+        annotation_text="Target: 1673", 
+        annotation_position="right",
+        annotation_font=dict(color="red", size=12)
+    )
 
     # Positives & Yield
     with st.expander("Positives & Yield"):
@@ -318,13 +337,14 @@ with tab2:
                             use_container_width=True)
     with col_g2:
         with st.expander("🎯 CRPDDP Progress"):
-            st.plotly_chart(plot_gauge("CRPDDP Progress", 267, 700, "green"),
+            st.plotly_chart(plot_gauge("CRPDDP Progress", 264, 700, "green"),
                             use_container_width=True)
 
 # ---------------------------- Footer ----------------------------
 st.markdown("---")
 st.markdown("""
 <div class="custom-footer">
-© 2026 Rich Data Analytics – Facility Performance Dashboard
+© 2026 Rich Data Analytics
 </div>
 """, unsafe_allow_html=True)
+
