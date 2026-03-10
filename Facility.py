@@ -178,7 +178,7 @@ with tab1:
 
     # Testing Trends
     
-   with st.expander("📈 Testing Trends by Month", expanded=True):
+    with st.expander("📈 Testing Trends by Month", expanded=True):
         fig1 = px.bar(filtered_df, x='Month', y='Total_tested', text='Total_tested',
                       title="Total Tested by Month",
                       color_discrete_sequence=px.colors.sequential.Teal)
@@ -329,6 +329,7 @@ st.markdown("""
 © 2026 Rich Data Analytics
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
