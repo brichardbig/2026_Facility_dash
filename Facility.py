@@ -271,13 +271,45 @@ with tab1:
         st.plotly_chart(fig3, use_container_width=True)
 
     # ICT Types
+    # ICT Testing Types
     with st.expander("ICT Testing Types"):
-        df_long = filtered_df.melt(id_vars='Month', value_vars=['ICT_tested', 'APN_ict', 'SNS'],
-                                   var_name='Testing_Type', value_name='Count')
-        fig4 = px.bar(df_long, x='Month', y='Count', color='Testing_Type', barmode='group',
-                      text='Count', text_auto=True, title="ICT Testing Types",
-                      color_discrete_sequence=px.colors.qualitative.Set2)
+
+        df_long = filtered_df.melt(
+            id_vars='Month',
+            value_vars=['ICT_tested', 'APN_ict', 'SNS'],
+            var_name='Testing_Type',
+            value_name='Count'
+        )
+
+        fig4 = px.bar(
+            df_long,
+            x='Month',
+            y='Count',
+            color='Testing_Type',
+            barmode='group',
+            text='Count',
+            title="ICT Testing Types",
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
+
+    # Show labels above bars
         fig4.update_traces(textposition='outside')
+
+    # Target line
+        fig4.add_hline(
+            y=502,
+            line_dash="dash",
+            line_color="red",
+            line_width=3,
+            annotation_text="Target = 502",
+            annotation_position="top left"
+        )
+
+        fig4.update_layout(
+            yaxis_title="Number Tested",
+            xaxis_title="Month"
+        )
+
         st.plotly_chart(fig4, use_container_width=True)
 
     # Linkage
@@ -383,6 +415,7 @@ st.markdown("""
 © 2026 Rich Data Analytics
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
