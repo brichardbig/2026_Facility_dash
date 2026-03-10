@@ -232,13 +232,42 @@ with tab1:
         st.plotly_chart(fig2, use_container_width=True)
 
     # ICT %
+    # ICT %
     with st.expander("ICT - HTS Percentage"):
-        filtered_df['ICT_percentage'] = (filtered_df['ICT_tested'] / filtered_df['Total_tested'] * 100)
-        fig3 = px.line(filtered_df, x='Month', y='ICT_percentage', markers=True,
-                       text=filtered_df['ICT_percentage'].round(1).astype(str)+"%",
-                       title="ICT Testing Percentage by Month",
-                       color_discrete_sequence=['#3b82f6'])
+
+        filtered_df['ICT_percentage'] = (
+            filtered_df['ICT_tested'] / filtered_df['Total_tested'] * 100
+        ).replace([np.inf, -np.inf], 0).fillna(0)
+
+        fig3 = px.line(
+            filtered_df,
+            x='Month',
+            y='ICT_percentage',
+            markers=True,
+            text=filtered_df['ICT_percentage'].round(1).astype(str) + "%",
+            title="ICT Testing Percentage by Month",
+            color_discrete_sequence=['#3b82f6']
+        )
+
+    # Show labels above markers
         fig3.update_traces(textposition='top center')
+
+    # Target line at 30%
+        fig3.add_hline(
+            y=30,
+            line_dash="dash",
+            line_color="red",
+            line_width=3,
+            annotation_text="Target = 30%",
+            annotation_position="top left"
+        )
+    
+        fig3.update_layout(
+            yaxis_title="ICT Percentage (%)",
+            xaxis_title="Month",
+            yaxis_range=[0, 100]
+        )
+
         st.plotly_chart(fig3, use_container_width=True)
 
     # ICT Types
@@ -354,6 +383,7 @@ st.markdown("""
 © 2026 Rich Data Analytics
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
