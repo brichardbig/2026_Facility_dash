@@ -437,7 +437,7 @@ with tab2:
 
     with col_g1:
         with st.expander("🎯 Census Progress"):
-            st.plotly_chart(plot_gauge("Census Progress", 6712, 7098, "purple"),
+            st.plotly_chart(plot_gauge("Census Progress", actual_census, 7098, "purple"),
                             use_container_width=True)
     with col_g2:
         with st.expander("🎯 CRPDDP Progress"):
@@ -451,6 +451,7 @@ st.markdown("""
 © 2026 Rich Data Analytics
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
