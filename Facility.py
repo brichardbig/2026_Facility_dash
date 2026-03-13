@@ -163,18 +163,44 @@ tab1, tab2 = st.tabs(["🩺 Prevention", "💊 Care & Treatment"])
 # ==================================================
 with tab1:
     st.header("Prevention Metrics")
+
     total_tested = filtered_df['Total_tested'].sum()
     total_positives = filtered_df['Positives'].sum()
     avg_yield = (total_positives / total_tested * 100) if total_tested > 0 else 0
+
     total_ict = filtered_df['ICT_tested'].sum()
     ict_percent = (total_ict / total_tested * 100) if total_tested > 0 else 0
+
     total_condoms = filtered_df['condom_distribution'].sum()
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1: metric_card("Total Tested", f"{total_tested:,}")
-    with col2: metric_card("Total Positives", f"{total_positives:,}<br><small>({avg_yield:.1f}% yield)</small>")
-    with col3: metric_card("Total ICT", f"{total_ict:,}<br><small>({ict_percent:.1f}% of tested)</small>")
-    with col4: metric_card("Condoms Distributed", f"{total_condoms:,}")
+    total_linked = filtered_df['Linked'].sum()
+    linkage_percent = (total_linked / total_positives * 100) if total_positives > 0 else 0
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    with col1:
+        metric_card("Total Tested", f"{total_tested:,}")
+
+    with col2:
+        metric_card(
+            "Total Positives",
+            f"{total_positives:,}<br><small>({avg_yield:.1f}% yield)</small>"
+        )
+
+    with col3:
+        metric_card(
+            "Total ICT",
+            f"{total_ict:,}<br><small>({ict_percent:.1f}% of tested)</small>"
+        )
+
+    with col4:
+        metric_card(
+            "Linkage to Care",
+            f"{total_linked:,}<br><small>({linkage_percent:.1f}%)</small>"
+        )
+
+    with col5:
+        metric_card("Condoms Distributed", f"{total_condoms:,}")
 
     # Testing Trends
     
@@ -415,6 +441,7 @@ st.markdown("""
 © 2026 Rich Data Analytics
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
