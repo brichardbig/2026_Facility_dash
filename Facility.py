@@ -176,10 +176,20 @@ with tab1:
     total_linked = filtered_df['Linked'].sum()
     linkage_percent = (total_linked / total_positives * 100) if total_positives > 0 else 0
 
+    # Testing Target
+    testing_target = 1673 * len(filtered_df)
+
+    # Surplus / Deficit
+    testing_delta = total_tested - testing_target
+
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        metric_card("Total Tested", f"{total_tested:,}")
+        metric_card(
+            "Total Tested",
+            f"{total_tested:,}",
+            testing_delta
+        )
 
     with col2:
         metric_card(
@@ -441,6 +451,7 @@ st.markdown("""
 © 2026 Rich Data Analytics
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
