@@ -417,7 +417,7 @@ with st.expander("Viral Coverage and Suppression by Month"):
     fig8 = px.line(
         filtered_df,
         x='Month',
-        y=['suppression', 'VL_coverage'],   # Plot both lines
+        y=['suppression', 'VL_coverage'],
         markers=True,
         title="Viral Coverage and Suppression by Month",
         color_discrete_map={
@@ -426,13 +426,14 @@ with st.expander("Viral Coverage and Suppression by Month"):
         }
     )
 
-    # Add percentage labels
+    # Add data labels to each line
     fig8.update_traces(
+        mode='lines+markers+text',
         texttemplate='%{y:.1f}%',
         textposition='top center'
     )
 
-    # Add target/reference line
+    # Add 95% target line
     fig8.add_hline(
         y=95,
         line_dash="dash",
@@ -441,23 +442,21 @@ with st.expander("Viral Coverage and Suppression by Month"):
         annotation_position="top left"
     )
 
-    # Update axis labels and legend
+    # Improve layout
     fig8.update_layout(
         xaxis_title="Month",
         yaxis_title="Percentage (%)",
         legend_title="Indicator",
-        hovermode="x unified"
+        hovermode="x unified",
+        yaxis=dict(range=[0, 100])
     )
 
-    # Rename legend labels nicely
+    # Beautify legend names
     fig8.for_each_trace(
-        lambda t: t.update(
-            name=t.name.capitalize()
-        )
+        lambda t: t.update(name=t.name.capitalize())
     )
 
     st.plotly_chart(fig8, use_container_width=True)
-
     # Gauges
     col_g1, col_g2 = st.columns(2)
     def plot_gauge(title, actual, target, color):
