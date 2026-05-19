@@ -482,13 +482,13 @@ def plot_gauge(title, actual, target, color):
             'position': "top",
             'increasing': {'color': "green"},
             'decreasing': {'color': "red"},
-            'font': {'size': 20}
+            'font': {'size': 18}
         },
 
         title={
-            'text': f"<b>{title}</b><br><span style='font-size:20px'>{percent:.1f}% Achieved</span>",
+            'text': f"<b>{title}</b><br><span style='font-size:18px'>{percent:.1f}% Achieved</span>",
             'font': {
-                'size': 26,
+                'size': 24,
                 'color': "#111827"
             }
         },
@@ -500,7 +500,7 @@ def plot_gauge(title, actual, target, color):
                 'tickwidth': 2,
                 'tickcolor': "#374151",
                 'tickfont': {
-                    'size': 14,
+                    'size': 13,
                     'color': "#111827"
                 }
             },
@@ -510,14 +510,12 @@ def plot_gauge(title, actual, target, color):
                 'thickness': 0.4
             },
 
-            # Background bands
             'steps': [
                 {'range': [0, target * 0.5], 'color': "#e5e7eb"},
                 {'range': [target * 0.5, target * 0.8], 'color': "#d1d5db"},
                 {'range': [target * 0.8, target], 'color': "#bbf7d0"}
             ],
 
-            # Target line
             'threshold': {
                 'line': {
                     'color': "red",
@@ -530,48 +528,43 @@ def plot_gauge(title, actual, target, color):
     ))
 
     fig.update_layout(
-        height=400,
-
-        margin=dict(t=80, b=20, l=30, r=30),
-
+        height=380,
+        margin=dict(t=70, b=20, l=20, r=20),
         paper_bgcolor="white",
-        plot_bgcolor="white",
-
-        font={
-            'family': "Arial",
-            'color': "#111827"
-        }
+        font={'family': "Arial"}
     )
 
     return fig
 
 
 # =========================
-# Display Gauges
+# Independent Expanders
 # =========================
 col_g1, col_g2 = st.columns(2)
 
 with col_g1:
-    st.plotly_chart(
-        plot_gauge(
-            "Census Progress",
-            actual_census,
-            7098,
-            "#7c3aed"
-        ),
-        use_container_width=True
-    )
+    with st.expander("🎯 Census Progress", expanded=False):
+        st.plotly_chart(
+            plot_gauge(
+                "Census Progress",
+                actual_census,
+                7098,
+                "#7c3aed"
+            ),
+            use_container_width=True
+        )
 
 with col_g2:
-    st.plotly_chart(
-        plot_gauge(
-            "CRPDDP Progress",
-            298,
-            600,
-            "#16a34a"
-        ),
-        use_container_width=True
-    )
+    with st.expander("🎯 CRPDDP Progress", expanded=False):
+        st.plotly_chart(
+            plot_gauge(
+                "CRPDDP Progress",
+                298,
+                600,
+                "#16a34a"
+            ),
+            use_container_width=True
+        )
 
 # ---------------------------- Footer ----------------------------
 st.markdown("---")
