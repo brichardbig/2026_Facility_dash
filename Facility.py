@@ -1,586 +1,509 @@
+# =========================================================
+# 2026 FACILITY PERFORMANCE DASHBOARD
+# =========================================================
+
 import pandas as pd
 import numpy as np
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.io as pio
 
-# ---------------------------- Page Setup ----------------------------
-st.set_page_config(page_title="2026 Performance Dashboard", layout="wide")
-st.title("📊 2026 Facility Performance Dashboard")
+# =========================================================
+# PAGE CONFIG
+# =========================================================
+st.set_page_config(
+    page_title="2026 Facility Performance Dashboard",
+    page_icon="📊",
+    layout="wide"
+)
 
-# ---------------------------- Load Data ----------------------------
-df = pd.read_excel('facility_data_2026.xlsx')
+pio.templates.default = "plotly_white"
 
-# ---------------------------- Preprocessing ----------------------------
+# =========================================================
+# LOAD DATA
+# =========================================================
+with st.spinner("Loading dashboard..."):
+    df = pd.read_excel("facility_data_2026.xlsx")
+
+# =========================================================
+# PREPROCESSING
+# =========================================================
 df['VL_coverage'] = df['VL_coverage'] * 100
 df['suppression'] = df['suppression'] * 100
 
 cols_to_round = [
-    'Total_tested', 'Positives', 'ICT_tested', 'APN_ict', 'SNS', 'Linked',
-    'condom_distribution', 'Newly_diagnosed', 'TI', 'Returned',
-    'LTFU', 'TO', 'Dead', 'CRPDDP'
+    'Total_tested', 'Positives', 'ICT_tested', 'APN_ict', 'SNS',
+    'Linked', 'condom_distribution', 'Newly_diagnosed',
+    'TI', 'Returned', 'LTFU', 'TO', 'Dead', 'CRPDDP'
 ]
+
 df[cols_to_round] = df[cols_to_round].astype('Int64')
 
-# ---------------------------- Custom CSS ----------------------------
+# Month ordering
+month_order = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+]
+
+df['Month'] = pd.Categorical(
+    df['Month'],
+    categories=month_order,
+    ordered=True
+)
+
+df = df.sort_values('Month')
+
+# =========================================================
+# CUSTOM CSS
+# =========================================================
 st.markdown("""
 <style>
+
+/* Main App */
+.stApp {
+    background-color: #f8fafc;
+}
+
+/* Hero Header */
+.hero {
+    background: linear-gradient(90deg, #2563eb, #1e40af);
+    padding: 28px;
+    border-radius: 18px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
 /* Metric Cards */
 .metric-card {
-    background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-    padding: 20px 16px;
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    text-align: center;
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    border-left: 6px solid #2563eb;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
     height: 160px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: 0.3s;
 }
+
 .metric-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.10);
 }
+
 .metric-title {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #1e3a8a;
-    margin-bottom: 8px;
-}
-.metric-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #0f172a;
-    line-height: 1.2;
-}
-.metric-value small, .metric-value span {
-    font-size: 0.85rem;
-    color: #334155;
-    font-weight: 400;
-}
-.metric-delta-positive {
-    color: #16a34a;
-    font-weight: 600;
-    margin-top: 6px;
-}
-.metric-delta-negative {
-    color: #dc2626;
-    font-weight: 600;
-    margin-top: 6px;
-}
-
-/* Tabs Styling */
-.stTabs { margin-bottom: 20px; }
-.stTabs [role="tablist"] {
-    border-bottom: 2px solid #cbd5e1;
-    display: flex;
-    gap: 8px;
-}
-.stTabs [role="tab"] {
-    padding: 8px 20px;
-    border-radius: 12px 12px 0 0;
-    background-color: #f1f5f9;
-    color: #1e40af;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: background 0.3s, transform 0.2s;
-}
-.stTabs [role="tab"]:hover {
-    background-color: #e2e8f0;
-    transform: translateY(-2px);
-}
-.stTabs [role="tab"][aria-selected="true"] {
-    background-color: #3b82f6;
-    color: white;
-    border-bottom: 2px solid #3b82f6;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* Expander Styling */
-.stExpander > div:first-child {
-    background-color: #f1f5f9;
-    border-radius: 12px;
-    padding: 10px 14px;
-    margin-bottom: 12px;
-}
-.stExpander > div:first-child:hover {
-    background-color: #e2e8f0;
-}
-
-/* Tab Pane Styling */
-.stTabPane {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-}
-
-/* Footer Styling */
-footer { visibility: hidden; }
-.custom-footer {
-    text-align: center;
     color: #64748b;
-    font-size: 0.9rem;
-    margin-top: 40px;
-    padding: 20px 0;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
+
+.metric-value {
+    color: #0f172a;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.metric-small {
+    color: #475569;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.metric-positive {
+    color: #16a34a;
+    font-weight: 700;
+}
+
+.metric-negative {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+/* Tabs */
+.stTabs [role="tablist"] {
+    gap: 12px;
+    border-bottom: 2px solid #dbeafe;
+}
+
+.stTabs [role="tab"] {
+    border-radius: 12px 12px 0 0;
+    padding: 10px 24px;
+    background-color: #e2e8f0;
+    color: #1e3a8a;
+    font-weight: 600;
+}
+
+.stTabs [role="tab"][aria-selected="true"] {
+    background-color: #2563eb;
+    color: white;
+}
+
+/* Expander */
+.stExpander {
+    border-radius: 14px !important;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 18px;
+    background: white;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+}
+
+/* Footer */
+.custom-footer {
+    text-align:center;
+    color:#64748b;
+    padding:20px;
+    font-size:14px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------------------- Metric Card Function ----------------------------
-def metric_card(title, value, delta=None):
-    delta_html = ""
-    if delta is not None:
-        color_class = "metric-delta-positive" if delta >= 0 else "metric-delta-negative"
-        delta_html = f'<div class="{color_class}">{delta:+,}</div>'
-    st.markdown(
-        f"""
-        <div class="metric-card">
-            <div class="metric-title">{title}</div>
-            <div class="metric-value">{value}</div>
-            {delta_html}
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+# =========================================================
+# HERO HEADER
+# =========================================================
+st.markdown("""
+<div class="hero">
+    <h1 style="color:white; margin-bottom:8px;">
+        📊 2026 Facility Performance Dashboard
+    </h1>
 
-# ---------------------------- Sidebar Filter ----------------------------
-st.sidebar.header("Filters")
+    <p style="color:#dbeafe; font-size:17px; margin:0;">
+        Real-time monitoring of Prevention, Care & Treatment indicators
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# SIDEBAR
+# =========================================================
+st.sidebar.markdown("## 🏥 Facility Dashboard")
+st.sidebar.info("Use filters below to explore performance trends.")
+
 selected_months = st.sidebar.multiselect(
     "Select Months",
     options=df['Month'].unique(),
     default=df['Month'].unique()
 )
+
 filtered_df = df[df['Month'].isin(selected_months)]
 
-# ---------------------------- Tabs ----------------------------
+# =========================================================
+# METRIC CARD FUNCTION
+# =========================================================
+def metric_card(title, value, small=None, delta=None):
+
+    delta_html = ""
+
+    if delta is not None:
+        delta_class = "metric-positive" if delta >= 0 else "metric-negative"
+        delta_html = f'<div class="{delta_class}">{delta:+,}</div>'
+
+    small_html = f'<div class="metric-small">{small}</div>' if small else ""
+
+    st.markdown(f"""
+    <div class="metric-card">
+        <div class="metric-title">{title}</div>
+        <div class="metric-value">{value}</div>
+        {small_html}
+        {delta_html}
+    </div>
+    """, unsafe_allow_html=True)
+
+# =========================================================
+# TABS
+# =========================================================
 tab1, tab2 = st.tabs(["🩺 Prevention", "💊 Care & Treatment"])
 
-# ==================================================
+# =========================================================
 # PREVENTION TAB
-# ==================================================
+# =========================================================
 with tab1:
-    st.header("Prevention Metrics")
+
+    st.subheader("🧪 Prevention Metrics")
 
     total_tested = filtered_df['Total_tested'].sum()
     total_positives = filtered_df['Positives'].sum()
-    avg_yield = (total_positives / total_tested * 100) if total_tested > 0 else 0
-
     total_ict = filtered_df['ICT_tested'].sum()
-    ict_percent = (total_ict / total_tested * 100) if total_tested > 0 else 0
-
     total_condoms = filtered_df['condom_distribution'].sum()
-
     total_linked = filtered_df['Linked'].sum()
-    linkage_percent = (total_linked / total_positives * 100) if total_positives > 0 else 0
 
-    # Testing Target
+    avg_yield = (total_positives / total_tested * 100) if total_tested else 0
+    ict_percent = (total_ict / total_tested * 100) if total_tested else 0
+    linkage_percent = (total_linked / total_positives * 100) if total_positives else 0
+
     testing_target = 1673 * len(filtered_df)
-
-    # Surplus / Deficit
     testing_delta = total_tested - testing_target
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        metric_card(
-            "Total Tested",
-            f"{total_tested:,}",
-            testing_delta
-        )
+        metric_card("Total Tested", f"{total_tested:,}", delta=testing_delta)
 
     with col2:
-        metric_card(
-            "Total Positives",
-            f"{total_positives:,}<br><small>({avg_yield:.1f}% yield)</small>"
-        )
+        metric_card("Total Positives", f"{total_positives:,}",
+                    f"{avg_yield:.1f}% Yield")
 
     with col3:
-        metric_card(
-            "Total ICT",
-            f"{total_ict:,}<br><small>({ict_percent:.1f}% of tested)</small>"
-        )
+        metric_card("ICT Tested", f"{total_ict:,}",
+                    f"{ict_percent:.1f}% of Tested")
 
     with col4:
-        metric_card(
-            "Linkage to Care",
-            f"{total_linked:,}<br><small>({linkage_percent:.1f}%)</small>"
-        )
+        metric_card("Linked to Care", f"{total_linked:,}",
+                    f"{linkage_percent:.1f}% Linkage")
 
     with col5:
-        metric_card("Condoms Distributed", f"{total_condoms:,}")
+        metric_card("Condom Distribution", f"{total_condoms:,}")
 
-    # Testing Trends
-    
-    with st.expander("📈 HIV Testing Trends by Month", expanded=True):
+    # =====================================================
+    # TESTING TRENDS
+    # =====================================================
+    with st.expander("📈 HIV Testing Trends", expanded=True):
 
         fig1 = px.bar(
             filtered_df,
             x='Month',
             y='Total_tested',
             text='Total_tested',
-            title="HIV Testing Trends by Month",
-            color_discrete_sequence=px.colors.sequential.Teal
+            color_discrete_sequence=['#2563eb']
         )
 
-    # Show labels above bars
         fig1.update_traces(textposition='outside')
 
-    # Target line
         fig1.add_hline(
             y=1673,
             line_dash="dash",
             line_color="red",
-            line_width=3,
-            annotation_text="Target = 1,673",
-            annotation_position="top left"
+            annotation_text="Target"
         )
 
         fig1.update_layout(
-            yaxis_title="Number Tested",
-            xaxis_title="Month",
-            uniformtext_minsize=8,
-            uniformtext_mode='hide'
+            height=420,
+            title="Monthly HIV Testing",
+            yaxis_title="Clients Tested",
+            xaxis_title="Month"
         )
 
         st.plotly_chart(fig1, use_container_width=True)
 
-    # Positives & Yield
-    with st.expander("Positives & Yield"):
-        filtered_df['Yield'] = (filtered_df['Positives'] / filtered_df['Total_tested'] * 100)\
-                               .replace([np.inf, -np.inf], 0).fillna(0)
+    # =====================================================
+    # POSITIVES & YIELD
+    # =====================================================
+    with st.expander("🦠 Positives & Yield"):
+
+        filtered_df['Yield'] = (
+            filtered_df['Positives'] /
+            filtered_df['Total_tested'] * 100
+        ).fillna(0)
+
         fig2 = go.Figure()
+
         fig2.add_trace(go.Bar(
-            x=filtered_df['Month'], y=filtered_df['Positives'], name="Positives",
-            text=filtered_df['Positives'], textposition='outside'
+            x=filtered_df['Month'],
+            y=filtered_df['Positives'],
+            name="Positives",
+            text=filtered_df['Positives']
         ))
+
         fig2.add_trace(go.Scatter(
-            x=filtered_df['Month'], y=filtered_df['Yield'], name="Yield (%)",
-            yaxis='y2', mode='lines+markers+text',
-            text=filtered_df['Yield'].round(1).astype(str)+"%",
-            textposition='top center'
+            x=filtered_df['Month'],
+            y=filtered_df['Yield'],
+            name="Yield %",
+            yaxis='y2',
+            mode='lines+markers+text',
+            text=filtered_df['Yield'].round(1).astype(str) + "%",
+            textposition='top center',
+            line=dict(color="#16a34a", width=3)
         ))
-        fig2.update_layout(yaxis=dict(title="Positives"),
-                           yaxis2=dict(title="Yield (%)", overlaying='y', side='right'),
-                           title="Positives and Yield by Month")
+
+        fig2.update_layout(
+            height=420,
+            title="Positives & Yield",
+            yaxis=dict(title="Positives"),
+            yaxis2=dict(
+                title="Yield %",
+                overlaying='y',
+                side='right'
+            )
+        )
+
         st.plotly_chart(fig2, use_container_width=True)
 
-    # ICT %
-    # ICT %
-    with st.expander("ICT - HTS Percentage"):
-
-        filtered_df['ICT_percentage'] = (
-            filtered_df['ICT_tested'] / filtered_df['Total_tested'] * 100
-        ).replace([np.inf, -np.inf], 0).fillna(0)
-
-        fig3 = px.line(
-            filtered_df,
-            x='Month',
-            y='ICT_percentage',
-            markers=True,
-            text=filtered_df['ICT_percentage'].round(1).astype(str) + "%",
-            title="ICT Testing Percentage by Month",
-            color_discrete_sequence=['#3b82f6']
-        )
-
-    # Show labels above markers
-        fig3.update_traces(textposition='top center')
-
-    # Target line at 30%
-        fig3.add_hline(
-            y=30,
-            line_dash="dash",
-            line_color="red",
-            line_width=3,
-            annotation_text="Target = 30%",
-            annotation_position="top left"
-        )
-    
-        fig3.update_layout(
-            yaxis_title="ICT Percentage (%)",
-            xaxis_title="Month",
-            yaxis_range=[0, 100]
-        )
-
-        st.plotly_chart(fig3, use_container_width=True)
-
-    # ICT Types
-    # ICT Testing Types
-    with st.expander("ICT Testing Types"):
-
-        df_long = filtered_df.melt(
-            id_vars='Month',
-            value_vars=['ICT_tested', 'APN_ict', 'SNS'],
-            var_name='Testing_Type',
-            value_name='Count'
-        )
-
-        fig4 = px.bar(
-            df_long,
-            x='Month',
-            y='Count',
-            color='Testing_Type',
-            barmode='group',
-            text='Count',
-            title="ICT Testing Types",
-            color_discrete_sequence=px.colors.qualitative.Set2
-        )
-
-    # Show labels above bars
-        fig4.update_traces(textposition='outside')
-
-    # Target line
-        fig4.add_hline(
-            y=502,
-            line_dash="dash",
-            line_color="red",
-            line_width=3,
-            annotation_text="Target = 502",
-            annotation_position="top left"
-        )
-
-        fig4.update_layout(
-            yaxis_title="Number Tested",
-            xaxis_title="Month"
-        )
-
-        st.plotly_chart(fig4, use_container_width=True)
-
-    # Linkage
-    with st.expander("Linkage to Care (%)"):
-        filtered_df['Linkage'] = (filtered_df['Linked'] / filtered_df['Positives'] * 100)
-        fig5 = px.line(filtered_df, x='Month', y='Linkage', markers=True,
-                       text=filtered_df['Linkage'].round(1).astype(str)+"%",
-                       title="Linkage to Care (%)",
-                       color_discrete_sequence=['#16a34a'])
-        fig5.update_traces(textposition='top center')
-        st.plotly_chart(fig5, use_container_width=True)
-
-    # Condom Table
-    with st.expander("🧷 Condom Distribution by Month"):
-        condom_table = filtered_df[['Month', 'condom_distribution']].copy()
-        condom_table['Target'] = 16730
-        condom_table['% Achieved'] = (condom_table['condom_distribution'] / 16730) * 100
-        st.dataframe(condom_table, use_container_width=True)
-
-# ==================================================
-# CARE & TREATMENT TAB
-# ==================================================
+# =========================================================
+# CARE & TREATMENT
+# =========================================================
 with tab2:
-    st.header("Care and Treatment Metrics")
+
+    st.subheader("💊 Care & Treatment Metrics")
+
     actual_census = 6854
-    net_growth = (filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']).sum() - \
-                 (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']).sum()
+
+    net_growth = (
+        filtered_df['Newly_diagnosed'] +
+        filtered_df['TI'] +
+        filtered_df['Returned']
+    ).sum() - (
+        filtered_df['LTFU'] +
+        filtered_df['TO'] +
+        filtered_df['Dead']
+    ).sum()
+
     total_ltfu = filtered_df['LTFU'].sum()
-    total_attrition = (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']).sum()
-    ltfu_percent = (total_ltfu / total_attrition * 100) if total_attrition != 0 else 0
+
     avg_suppression = filtered_df['suppression'].mean()
 
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1: metric_card("Actual Census", f"{actual_census:,}")
-    with col2: metric_card("Net Growth", f"{net_growth:,}")
-    with col3: metric_card("LTFU", f"{total_ltfu:,}")
-    with col4: metric_card("LTFU % of Attrition", f"{ltfu_percent:.1f}%")
-    with col5: metric_card("Viral Suppression (%)", f"{avg_suppression:.1f}%")
+    col1, col2, col3, col4 = st.columns(4)
 
-    filtered_df['Net_Growth'] = (filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']) - \
-                                (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead'])
+    with col1:
+        metric_card("Actual Census", f"{actual_census:,}")
 
-    # Net Growth Table
-    with st.expander("Net Growth Table", expanded=False):
-        net_growth_table = filtered_df[['Month','Newly_diagnosed','TI','Returned','LTFU','TO','Dead','Net_Growth']]
-        net_growth_table['Target'] = 45
-        st.dataframe(net_growth_table, use_container_width=True)
+    with col2:
+        metric_card("Net Growth", f"{net_growth:,}")
 
-    # Net Growth Chart
-    with st.expander("Net Growth by Month", expanded=True):
-        fig6 = px.area(filtered_df, x='Month', y='Net_Growth', markers=True,
-                       text=filtered_df['Net_Growth'], title="Net Growth by Month",
-                       color_discrete_sequence=['#3b82f6'])
-        fig6.update_traces(textposition='top center')
-        st.plotly_chart(fig6, use_container_width=True)
+    with col3:
+        metric_card("LTFU", f"{total_ltfu:,}")
 
-    # Attrition
-    with st.expander("Attrition by Month"):
-        filtered_df['Total_Attrition'] = filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']
-        fig7 = px.bar(filtered_df, x='Month', y=['LTFU','TO','Dead','Total_Attrition'],
-                      barmode='group', text_auto=True, title="Attrition by Month",
-                      color_discrete_sequence=px.colors.qualitative.Set3)
-        fig7.update_traces(textposition='outside')
-        st.plotly_chart(fig7, use_container_width=True)
+    with col4:
+        metric_card("Viral Suppression", f"{avg_suppression:.1f}%")
 
-   # Viral Coverage and Suppression
-with st.expander("Viral Coverage and Suppression by Month"):
+    # =====================================================
+    # VIRAL SUPPRESSION
+    # =====================================================
+    with st.expander("🧬 Viral Coverage & Suppression", expanded=True):
 
-    fig8 = px.line(
-        filtered_df,
-        x='Month',
-        y=['suppression', 'VL_coverage'],
-        markers=True,
-        title="Viral Coverage and Suppression by Month",
-        color_discrete_map={
-            'suppression': '#16a34a',   # Green
-            'VL_coverage': '#2563eb'       # Blue
-        }
-    )
-
-    # Add data labels to each line
-    fig8.update_traces(
-        mode='lines+markers+text',
-        texttemplate='%{y:.1f}%',
-        textposition='top center'
-    )
-
-    # Add 95% target line
-    fig8.add_hline(
-        y=95,
-        line_dash="dash",
-        line_color="red",
-        annotation_text="Target 95%",
-        annotation_position="top left"
-    )
-
-    # Improve layout
-    fig8.update_layout(
-        xaxis_title="Month",
-        yaxis_title="Percentage (%)",
-        legend_title="Indicator",
-        hovermode="x unified",
-    )
-
-    # Beautify legend names
-    fig8.for_each_trace(
-        lambda t: t.update(name=t.name.capitalize())
-    )
-
-    st.plotly_chart(fig8, use_container_width=True)
-
-# =========================
-# Improved Gauge Function
-# =========================
-def plot_gauge(title, actual, target, color):
-
-    percent = (actual / target) * 100
-
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number+delta",
-
-        value=actual,
-
-        number={
-            'font': {
-                'size': 42,
-                'color': color
+        fig8 = px.line(
+            filtered_df,
+            x='Month',
+            y=['suppression', 'VL_coverage'],
+            markers=True,
+            color_discrete_map={
+                'suppression': '#16a34a',
+                'VL_coverage': '#2563eb'
             }
-        },
+        )
 
-        delta={
-            'reference': target,
-            'relative': False,
-            'position': "top",
-            'increasing': {'color': "green"},
-            'decreasing': {'color': "red"},
-            'font': {'size': 18}
-        },
+        fig8.update_traces(
+            mode='lines+markers+text',
+            texttemplate='%{y:.1f}%',
+            textposition='top center'
+        )
 
-        title={
-            'text': f"<b>{title}</b><br><span style='font-size:18px'>{percent:.1f}% Achieved</span>",
-            'font': {
-                'size': 24,
-                'color': "#111827"
-            }
-        },
+        fig8.add_hline(
+            y=95,
+            line_dash="dash",
+            line_color="red",
+            annotation_text="95% Target"
+        )
 
-        gauge={
+        fig8.update_layout(
+            height=450,
+            title="Viral Coverage & Suppression",
+            yaxis_title="Percentage (%)",
+            hovermode="x unified"
+        )
 
-            'axis': {
-                'range': [0, target],
-                'tickwidth': 2,
-                'tickcolor': "#374151",
-                'tickfont': {
-                    'size': 13,
-                    'color': "#111827"
+        st.plotly_chart(fig8, use_container_width=True)
+
+    # =====================================================
+    # GAUGE FUNCTION
+    # =====================================================
+    def plot_gauge(title, actual, target, color):
+
+        percent = (actual / target) * 100
+
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number",
+
+            value=actual,
+
+            number={
+                'font': {
+                    'size': 40,
+                    'color': color
                 }
             },
 
-            'bar': {
-                'color': color,
-                'thickness': 0.4
+            title={
+                'text': f"<b>{title}</b><br>{percent:.1f}% Achieved",
+                'font': {'size': 24}
             },
 
-            'steps': [
-                {'range': [0, target * 0.5], 'color': "#e5e7eb"},
-                {'range': [target * 0.5, target * 0.8], 'color': "#d1d5db"},
-                {'range': [target * 0.8, target], 'color': "#bbf7d0"}
-            ],
+            gauge={
 
-            'threshold': {
-                'line': {
-                    'color': "red",
-                    'width': 6
+                'axis': {
+                    'range': [0, target],
+                    'tickcolor': "#334155"
                 },
-                'thickness': 1,
-                'value': target
+
+                'bar': {
+                    'color': color,
+                    'thickness': 0.4
+                },
+
+                'steps': [
+                    {'range': [0, target * 0.5], 'color': "#e2e8f0"},
+                    {'range': [target * 0.5, target * 0.8], 'color': "#cbd5e1"},
+                    {'range': [target * 0.8, target], 'color': "#bbf7d0"}
+                ],
+
+                'threshold': {
+                    'line': {'color': "red", 'width': 6},
+                    'value': target
+                }
             }
-        }
-    ))
+        ))
 
-    fig.update_layout(
-        height=380,
-        margin=dict(t=70, b=20, l=20, r=20),
-        paper_bgcolor="white",
-        font={'family': "Arial"}
-    )
-
-    return fig
-
-
-# =========================
-# Independent Expanders
-# =========================
-col_g1, col_g2 = st.columns(2)
-
-with col_g1:
-    with st.expander("🎯 Census Progress", expanded=False):
-        st.plotly_chart(
-            plot_gauge(
-                "Census Progress",
-                actual_census,
-                7098,
-                "#7c3aed"
-            ),
-            use_container_width=True
+        fig.update_layout(
+            height=380,
+            margin=dict(t=60, b=20, l=20, r=20)
         )
 
-with col_g2:
-    with st.expander("🎯 CRPDDP Progress", expanded=False):
-        st.plotly_chart(
-            plot_gauge(
-                "CRPDDP Progress",
-                298,
-                600,
-                "#16a34a"
-            ),
-            use_container_width=True
-        )
+        return fig
 
-# ---------------------------- Footer ----------------------------
+    # =====================================================
+    # GAUGES
+    # =====================================================
+    col_g1, col_g2 = st.columns(2)
+
+    with col_g1:
+        with st.expander("🎯 Census Progress", expanded=False):
+
+            st.plotly_chart(
+                plot_gauge(
+                    "Census Progress",
+                    actual_census,
+                    7098,
+                    "#7c3aed"
+                ),
+                use_container_width=True
+            )
+
+    with col_g2:
+        with st.expander("🎯 CRPDDP Progress", expanded=False):
+
+            st.plotly_chart(
+                plot_gauge(
+                    "CRPDDP Progress",
+                    298,
+                    600,
+                    "#16a34a"
+                ),
+                use_container_width=True
+            )
+
+# =========================================================
+# FOOTER
+# =========================================================
 st.markdown("---")
+
 st.markdown("""
 <div class="custom-footer">
-© 2026 Rich Data Analytics
+    © 2026 Rich Data Analytics | Built with Streamlit & Plotly
 </div>
 """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
