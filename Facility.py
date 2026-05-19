@@ -448,7 +448,6 @@ with st.expander("Viral Coverage and Suppression by Month"):
         yaxis_title="Percentage (%)",
         legend_title="Indicator",
         hovermode="x unified",
-        yaxis=dict(range=[0, 100])
     )
 
     # Beautify legend names
