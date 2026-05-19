@@ -456,28 +456,108 @@ with st.expander("Viral Coverage and Suppression by Month"):
     )
 
     st.plotly_chart(fig8, use_container_width=True)
-    # Gauges
-    col_g1, col_g2 = st.columns(2)
-    def plot_gauge(title, actual, target, color):
-        fig = go.Figure(go.Indicator(
-            mode="gauge+number+delta",
-            value=actual,
-            delta={'reference': target},
-            gauge={'axis': {'range': [0, target]}, 'bar': {'color': color},
-                   'threshold': {'line': {'color': "red", 'width': 4}, 'value': target}},
-            title={'text': title}
-        ))
-        fig.update_layout(height=300)
-        return fig
+    # =========================
+# Progress Gauge Function
+# =========================
+def plot_gauge(title, actual, target, color):
 
-    with col_g1:
-        with st.expander("🎯 Census Progress"):
-            st.plotly_chart(plot_gauge("Census Progress", actual_census, 7098, "purple"),
-                            use_container_width=True)
-    with col_g2:
-        with st.expander("🎯 CRPDDP Progress"):
-            st.plotly_chart(plot_gauge("CRPDDP Progress", 298, 600, "green"),
-                            use_container_width=True)
+    percent = (actual / target) * 100
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number+delta",
+        value=actual,
+
+        # Main number formatting
+        number={
+            'font': {'size': 38, 'color': color},
+            'suffix': ""
+        },
+
+        # Delta formatting
+        delta={
+            'reference': target,
+            'increasing': {'color': "green"},
+            'decreasing': {'color': "red"},
+            'position': "top"
+        },
+
+        # Gauge styling
+        gauge={
+            'shape': "angular",
+
+            'axis': {
+                'range': [0, target],
+                'tickwidth': 1,
+                'tickcolor': "#666"
+            },
+
+            'bar': {
+                'color': color,
+                'thickness': 0.35
+            },
+
+            # Background ranges
+            'steps': [
+                {'range': [0, target * 0.5], 'color': "#f3f4f6"},
+                {'range': [target * 0.5, target * 0.8], 'color': "#e5e7eb"},
+                {'range': [target * 0.8, target], 'color': "#d1fae5"}
+            ],
+
+            # Target threshold line
+            'threshold': {
+                'line': {'color': "red", 'width': 5},
+                'thickness': 0.8,
+                'value': target
+            }
+        },
+
+        title={
+            'text': f"<b>{title}</b><br><span style='font-size:18px'>{percent:.1f}% Achieved</span>",
+            'font': {'size': 22}
+        }
+    ))
+
+    fig.update_layout(
+        height=320,
+
+        margin=dict(t=60, b=20, l=20, r=20),
+
+        paper_bgcolor="white",
+        font={'family': "Arial"},
+
+    )
+
+    return fig
+
+
+# =========================
+# Display Gauges
+# =========================
+col_g1, col_g2 = st.columns(2)
+
+with col_g1:
+    with st.expander("🎯 Census Progress", expanded=True):
+        st.plotly_chart(
+            plot_gauge(
+                "Census Progress",
+                actual_census,
+                7098,
+                "#7c3aed"   # Purple
+            ),
+            use_container_width=True
+        )
+
+with col_g2:
+    with st.expander("🎯 CRPDDP Progress", expanded=True):
+        st.plotly_chart(
+            plot_gauge(
+                "CRPDDP Progress",
+                298,
+                600,
+                "#16a34a"   # Green
+            ),
+            use_container_width=True
+        )
 
 # ---------------------------- Footer ----------------------------
 st.markdown("---")
