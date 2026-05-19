@@ -456,8 +456,9 @@ with st.expander("Viral Coverage and Suppression by Month"):
     )
 
     st.plotly_chart(fig8, use_container_width=True)
-    # =========================
-# Progress Gauge Function
+
+# =========================
+# Improved Gauge Function
 # =========================
 def plot_gauge(title, actual, target, color):
 
@@ -465,66 +466,81 @@ def plot_gauge(title, actual, target, color):
 
     fig = go.Figure(go.Indicator(
         mode="gauge+number+delta",
+
         value=actual,
 
-        # Main number formatting
         number={
-            'font': {'size': 38, 'color': color},
-            'suffix': ""
+            'font': {
+                'size': 42,
+                'color': color
+            }
         },
 
-        # Delta formatting
         delta={
             'reference': target,
+            'relative': False,
+            'position': "top",
             'increasing': {'color': "green"},
             'decreasing': {'color': "red"},
-            'position': "top"
+            'font': {'size': 20}
         },
 
-        # Gauge styling
+        title={
+            'text': f"<b>{title}</b><br><span style='font-size:20px'>{percent:.1f}% Achieved</span>",
+            'font': {
+                'size': 26,
+                'color': "#111827"
+            }
+        },
+
         gauge={
-            'shape': "angular",
 
             'axis': {
                 'range': [0, target],
-                'tickwidth': 1,
-                'tickcolor': "#666"
+                'tickwidth': 2,
+                'tickcolor': "#374151",
+                'tickfont': {
+                    'size': 14,
+                    'color': "#111827"
+                }
             },
 
             'bar': {
                 'color': color,
-                'thickness': 0.35
+                'thickness': 0.4
             },
 
-            # Background ranges
+            # Background bands
             'steps': [
-                {'range': [0, target * 0.5], 'color': "#f3f4f6"},
-                {'range': [target * 0.5, target * 0.8], 'color': "#e5e7eb"},
-                {'range': [target * 0.8, target], 'color': "#d1fae5"}
+                {'range': [0, target * 0.5], 'color': "#e5e7eb"},
+                {'range': [target * 0.5, target * 0.8], 'color': "#d1d5db"},
+                {'range': [target * 0.8, target], 'color': "#bbf7d0"}
             ],
 
-            # Target threshold line
+            # Target line
             'threshold': {
-                'line': {'color': "red", 'width': 5},
-                'thickness': 0.8,
+                'line': {
+                    'color': "red",
+                    'width': 6
+                },
+                'thickness': 1,
                 'value': target
             }
-        },
-
-        title={
-            'text': f"<b>{title}</b><br><span style='font-size:18px'>{percent:.1f}% Achieved</span>",
-            'font': {'size': 22}
         }
     ))
 
     fig.update_layout(
-        height=320,
+        height=400,
 
-        margin=dict(t=60, b=20, l=20, r=20),
+        margin=dict(t=80, b=20, l=30, r=30),
 
         paper_bgcolor="white",
-        font={'family': "Arial"},
+        plot_bgcolor="white",
 
+        font={
+            'family': "Arial",
+            'color': "#111827"
+        }
     )
 
     return fig
@@ -536,28 +552,26 @@ def plot_gauge(title, actual, target, color):
 col_g1, col_g2 = st.columns(2)
 
 with col_g1:
-    with st.expander("🎯 Census Progress", expanded=True):
-        st.plotly_chart(
-            plot_gauge(
-                "Census Progress",
-                actual_census,
-                7098,
-                "#7c3aed"   # Purple
-            ),
-            use_container_width=True
-        )
+    st.plotly_chart(
+        plot_gauge(
+            "Census Progress",
+            actual_census,
+            7098,
+            "#7c3aed"
+        ),
+        use_container_width=True
+    )
 
 with col_g2:
-    with st.expander("🎯 CRPDDP Progress", expanded=True):
-        st.plotly_chart(
-            plot_gauge(
-                "CRPDDP Progress",
-                298,
-                600,
-                "#16a34a"   # Green
-            ),
-            use_container_width=True
-        )
+    st.plotly_chart(
+        plot_gauge(
+            "CRPDDP Progress",
+            298,
+            600,
+            "#16a34a"
+        ),
+        use_container_width=True
+    )
 
 # ---------------------------- Footer ----------------------------
 st.markdown("---")
