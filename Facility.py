@@ -412,66 +412,66 @@ with tab2:
         st.plotly_chart(fig7, use_container_width=True)
 
    # Viral Coverage and Suppression
-with st.expander("Viral Coverage and Suppression by Month"):
+    with st.expander("Viral Coverage and Suppression by Month"):
 
-    fig8 = px.line(
-        filtered_df,
-        x='Month',
-        y=['suppression', 'VL_coverage'],
-        markers=True,
-        title="Viral Coverage and Suppression by Month",
-        color_discrete_map={
-            'suppression': '#16a34a',   # Green
-            'VL_coverage': '#2563eb'       # Blue
-        }
-    )
+        fig8 = px.line(
+            filtered_df,
+            x='Month',
+            y=['suppression', 'VL_coverage'],
+            markers=True,
+            title="Viral Coverage and Suppression by Month",
+            color_discrete_map={
+                'suppression': '#16a34a',   # Green
+                'VL_coverage': '#2563eb'       # Blue
+            }
+        )
 
     # Add data labels to each line
-    fig8.update_traces(
-        mode='lines+markers+text',
-        texttemplate='%{y:.1f}%',
-        textposition='top center'
-    )
+            fig8.update_traces(
+            mode='lines+markers+text',
+            texttemplate='%{y:.1f}%',
+            textposition='top center'
+        )
 
-    # Add 95% target line
-    fig8.add_hline(
-        y=95,
-        line_dash="dash",
-        line_color="red",
-        annotation_text="Target 95%",
-        annotation_position="top left"
-    )
+        # Add 95% target line
+        fig8.add_hline(
+            y=95,
+            line_dash="dash",
+            line_color="red",
+            annotation_text="Target 95%",
+            annotation_position="top left"
+        )
 
-    # Improve layout
-    fig8.update_layout(
-        xaxis_title="Month",
-        yaxis_title="Percentage (%)",
-        legend_title="Indicator",
-        hovermode="x unified",
-    )
+        # Improve layout
+        fig8.update_layout(
+            xaxis_title="Month",
+            yaxis_title="Percentage (%)",
+            legend_title="Indicator",
+            hovermode="x unified",
+        )
 
-    # Beautify legend names
-    fig8.for_each_trace(
-        lambda t: t.update(name=t.name.capitalize())
-    )
+        # Beautify legend names
+        fig8.for_each_trace(
+            lambda t: t.update(name=t.name.capitalize())
+        )
 
-    st.plotly_chart(fig8, use_container_width=True)
+        st.plotly_chart(fig8, use_container_width=True)
 
-def plot_gauge(title, actual, target, color):
-    pct = round((actual / target) * 100, 1)
-    remaining = max(target - actual, 0)
+    def plot_gauge(title, actual, target, color):
+        pct = round((actual / target) * 100, 1)
+        remaining = max(target - actual, 0)
 
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=actual,
-        number={
-            'font': {'size': 38, 'color': color},
-            'valueformat': ','
-        },
-        title={
-            'text': f"<b>{title}</b><br><span style='font-size:15px;color:#6b7280'>{pct}% Achieved</span>",
-            'font': {'size': 20, 'color': "#111827"}
-        },
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=actual,
+            number={
+                'font': {'size': 38, 'color': color},
+                'valueformat': ','
+            },
+            title={
+                'text': f"<b>{title}</b><br><span style='font-size:15px;color:#6b7280'>{pct}% Achieved</span>",
+                'font': {'size': 20, 'color': "#111827"}
+            },
         gauge={
             'axis': {
                 'range': [0, target],
