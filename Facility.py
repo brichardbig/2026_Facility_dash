@@ -457,7 +457,7 @@ with st.expander("Viral Coverage and Suppression by Month"):
 
     st.plotly_chart(fig8, use_container_width=True)
 
-# =========================
+# ========================= 
 # Improved Gauge Function
 # =========================
 def plot_gauge(title, subtitle, actual, target, color, track="#f3f4f6"):
@@ -486,7 +486,8 @@ def plot_gauge(title, subtitle, actual, target, color, track="#f3f4f6"):
                  font=dict(size=13, color="#6b7280"), showarrow=False),
         ]
     )
-    return fig, pct, remaining
+    return fig, pct, remaining  # <-- returns 3 values now
+
 
 # =========================
 # Independent Expanders
@@ -495,27 +496,27 @@ col_g1, col_g2 = st.columns(2)
 
 with col_g1:
     with st.expander("🎯 Census Progress", expanded=False):
-        st.plotly_chart(
-            plot_gauge(
-                "Census Progress",
-                actual_census,
-                7098,
-                "#7c3aed"
-            ),
-            use_container_width=True
+        fig, pct, remaining = plot_gauge(       # <-- unpack all 3
+            "Census Progress", "Household enumeration",
+            actual_census, 7098, "#7c3aed"
         )
+        st.plotly_chart(fig, use_container_width=True)
+        st.progress(min(int(pct), 100))
+        c1, c2 = st.columns(2)
+        c1.metric("Actual", f"{actual_census:,}")
+        c2.metric("Remaining", f"{remaining:,}")
 
 with col_g2:
     with st.expander("🎯 CRPDDP Progress", expanded=False):
-        st.plotly_chart(
-            plot_gauge(
-                "CRPDDP Progress",
-                322,
-                600,
-                "#16a34a"
-            ),
-            use_container_width=True
+        fig, pct, remaining = plot_gauge(       # <-- unpack all 3
+            "CRPDDP Progress", "Disability data programme",
+            322, 600, "#16a34a"
         )
+        st.plotly_chart(fig, use_container_width=True)
+        st.progress(min(int(pct), 100))
+        c1, c2 = st.columns(2)
+        c1.metric("Actual", "322")
+        c2.metric("Remaining", f"{remaining:,}")
 
 # ---------------------------- Footer ----------------------------
 st.markdown("---")
