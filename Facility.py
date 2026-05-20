@@ -460,82 +460,33 @@ with st.expander("Viral Coverage and Suppression by Month"):
 # =========================
 # Improved Gauge Function
 # =========================
-def plot_gauge(title, actual, target, color):
+def plot_gauge(title, subtitle, actual, target, color, track="#f3f4f6"):
+    pct = round((actual / target) * 100, 1)
+    remaining = max(target - actual, 0)
 
-    percent = (actual / target) * 100
-
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number+delta",
-
-        value=actual,
-
-        number={
-            'font': {
-                'size': 42,
-                'color': color
-            }
-        },
-
-        delta={
-            'reference': target,
-            'relative': False,
-            'position': "top",
-            'increasing': {'color': "green"},
-            'decreasing': {'color': "red"},
-            'font': {'size': 18}
-        },
-
-        title={
-            'text': f"<b>{title}</b><br><span style='font-size:18px'>{percent:.1f}% Achieved</span>",
-            'font': {
-                'size': 24,
-                'color': "#111827"
-            }
-        },
-
-        gauge={
-
-            'axis': {
-                'range': [0, target],
-                'tickwidth': 2,
-                'tickcolor': "#374151",
-                'tickfont': {
-                    'size': 13,
-                    'color': "#111827"
-                }
-            },
-
-            'bar': {
-                'color': color,
-                'thickness': 0.4
-            },
-
-            'steps': [
-                {'range': [0, target * 0.5], 'color': "#e5e7eb"},
-                {'range': [target * 0.5, target * 0.8], 'color': "#d1d5db"},
-                {'range': [target * 0.8, target], 'color': "#bbf7d0"}
-            ],
-
-            'threshold': {
-                'line': {
-                    'color': "red",
-                    'width': 6
-                },
-                'thickness': 1,
-                'value': target
-            }
-        }
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
+        values=[actual, remaining],
+        hole=0.72,
+        direction="clockwise",
+        rotation=225,
+        marker=dict(colors=[color, track], line=dict(width=0)),
+        textinfo="none",
+        hoverinfo="skip",
     ))
-
     fig.update_layout(
-        height=380,
-        margin=dict(t=70, b=20, l=20, r=20),
+        height=220,
+        margin=dict(t=10, b=10, l=10, r=10),
         paper_bgcolor="white",
-        font={'family': "Arial"}
+        showlegend=False,
+        annotations=[
+            dict(text=f"<b>{pct}%</b>", x=0.5, y=0.55,
+                 font=dict(size=28, color=color), showarrow=False),
+            dict(text="achieved", x=0.5, y=0.38,
+                 font=dict(size=13, color="#6b7280"), showarrow=False),
+        ]
     )
-
-    return fig
-
+    return fig, pct, remaining
 
 # =========================
 # Independent Expanders
