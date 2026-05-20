@@ -427,7 +427,7 @@ with tab2:
         )
 
     # Add data labels to each line
-            fig8.update_traces(
+        fig8.update_traces(
             mode='lines+markers+text',
             texttemplate='%{y:.1f}%',
             textposition='top center'
