@@ -457,36 +457,52 @@ with st.expander("Viral Coverage and Suppression by Month"):
 
     st.plotly_chart(fig8, use_container_width=True)
 
-# ========================= 
-# Improved Gauge Function
-# =========================
-def plot_gauge(title, subtitle, actual, target, color, track="#f3f4f6"):
+def plot_gauge(title, actual, target, color):
     pct = round((actual / target) * 100, 1)
     remaining = max(target - actual, 0)
 
-    fig = go.Figure()
-    fig.add_trace(go.Pie(
-        values=[actual, remaining],
-        hole=0.72,
-        direction="clockwise",
-        rotation=225,
-        marker=dict(colors=[color, track], line=dict(width=0)),
-        textinfo="none",
-        hoverinfo="skip",
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=actual,
+        number={
+            'font': {'size': 38, 'color': color},
+            'valueformat': ','
+        },
+        title={
+            'text': f"<b>{title}</b><br><span style='font-size:15px;color:#6b7280'>{pct}% Achieved</span>",
+            'font': {'size': 20, 'color': "#111827"}
+        },
+        gauge={
+            'axis': {
+                'range': [0, target],
+                'tickwidth': 1,
+                'tickcolor': "#d1d5db",
+                'tickfont': {'size': 11, 'color': "#6b7280"},
+                'nticks': 5
+            },
+            'bar': {'color': color, 'thickness': 0.35},
+            'bgcolor': "white",
+            'borderwidth': 0,
+            'steps': [
+                {'range': [0, target * 0.5],  'color': "#f3f4f6"},
+                {'range': [target * 0.5, target * 0.8], 'color': "#e5e7eb"},
+                {'range': [target * 0.8, target], 'color': "#d1fae5"}
+            ],
+            'threshold': {
+                'line': {'color': "#ef4444", 'width': 3},
+                'thickness': 0.75,
+                'value': target
+            }
+        }
     ))
+
     fig.update_layout(
-        height=220,
-        margin=dict(t=10, b=10, l=10, r=10),
+        height=300,
+        margin=dict(t=80, b=30, l=30, r=30),
         paper_bgcolor="white",
-        showlegend=False,
-        annotations=[
-            dict(text=f"<b>{pct}%</b>", x=0.5, y=0.55,
-                 font=dict(size=28, color=color), showarrow=False),
-            dict(text="achieved", x=0.5, y=0.38,
-                 font=dict(size=13, color="#6b7280"), showarrow=False),
-        ]
+        font={'family': "Arial"}
     )
-    return fig, pct, remaining  # <-- returns 3 values now
+    return fig, pct, remaining
 
 
 # =========================
@@ -496,9 +512,8 @@ col_g1, col_g2 = st.columns(2)
 
 with col_g1:
     with st.expander("🎯 Census Progress", expanded=False):
-        fig, pct, remaining = plot_gauge(       # <-- unpack all 3
-            "Census Progress", "Household enumeration",
-            actual_census, 7098, "#7c3aed"
+        fig, pct, remaining = plot_gauge(
+            "Census Progress", actual_census, 7098, "#7c3aed"
         )
         st.plotly_chart(fig, use_container_width=True)
         st.progress(min(int(pct), 100))
@@ -508,9 +523,8 @@ with col_g1:
 
 with col_g2:
     with st.expander("🎯 CRPDDP Progress", expanded=False):
-        fig, pct, remaining = plot_gauge(       # <-- unpack all 3
-            "CRPDDP Progress", "Disability data programme",
-            322, 600, "#16a34a"
+        fig, pct, remaining = plot_gauge(
+            "CRPDDP Progress", 322, 600, "#16a34a"
         )
         st.plotly_chart(fig, use_container_width=True)
         st.progress(min(int(pct), 100))
