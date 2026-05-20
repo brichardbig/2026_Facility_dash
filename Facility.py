@@ -502,7 +502,7 @@ with tab2:
         paper_bgcolor="white",
         font={'family': "Arial"}
     )
-    return fig, pct, remaining
+        return fig, pct, remaining
 
 
 # =========================
