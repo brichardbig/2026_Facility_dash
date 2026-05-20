@@ -22,15 +22,52 @@ cols_to_round = [
 ]
 df[cols_to_round] = df[cols_to_round].astype('Int64')
 
+# ---------------------------- AHF Brand Colors ----------------------------
+# Primary: AHF Red     #CC0000
+# Dark:    AHF Black   #1A1A1A
+# Light:   AHF White   #FFFFFF
+# Accent:  Light Red   #FF4D4D
+# Muted:   Light Grey  #F5F5F5
+# Text:    Dark Grey   #333333
+
+AHF_RED       = "#CC0000"
+AHF_DARK_RED  = "#990000"
+AHF_BLACK     = "#1A1A1A"
+AHF_WHITE     = "#FFFFFF"
+AHF_LIGHT_RED = "#FF4D4D"
+AHF_GREY_BG   = "#F5F5F5"
+AHF_GREY_TEXT = "#333333"
+AHF_MID_GREY  = "#888888"
+
+# Chart color sequences based on AHF palette
+AHF_CHART_COLORS = [AHF_RED, AHF_BLACK, "#FF6666", "#4D4D4D", "#FF9999", "#808080"]
+
 # ---------------------------- Custom CSS ----------------------------
-st.markdown("""
+st.markdown(f"""
 <style>
-/* Metric Cards */
-.metric-card {
-    background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+/* ---- Global Background ---- */
+.stApp {{
+    background-color: {AHF_GREY_BG};
+}}
+
+/* ---- Title ---- */
+h1 {{
+    color: {AHF_RED} !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px;
+}}
+h2 {{
+    color: {AHF_BLACK} !important;
+    border-left: 5px solid {AHF_RED};
+    padding-left: 10px;
+}}
+
+/* ---- Metric Cards ---- */
+.metric-card {{
+    background: linear-gradient(135deg, {AHF_RED}, {AHF_DARK_RED});
     padding: 20px 16px;
     border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 18px rgba(204,0,0,0.25);
     text-align: center;
     height: 160px;
     display: flex;
@@ -38,94 +75,111 @@ st.markdown("""
     justify-content: center;
     align-items: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.metric-card:hover {
+}}
+.metric-card:hover {{
     transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-}
-.metric-title {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #1e3a8a;
+    box-shadow: 0 10px 24px rgba(204,0,0,0.35);
+}}
+.metric-title {{
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
     margin-bottom: 8px;
-}
-.metric-value {
-    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}}
+.metric-value {{
+    font-size: 1.9rem;
     font-weight: 700;
-    color: #0f172a;
+    color: {AHF_WHITE};
     line-height: 1.2;
-}
-.metric-value small, .metric-value span {
-    font-size: 0.85rem;
-    color: #334155;
+}}
+.metric-value small, .metric-value span {{
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.75);
     font-weight: 400;
-}
-.metric-delta-positive {
-    color: #16a34a;
+}}
+.metric-delta-positive {{
+    color: #90EE90;
     font-weight: 600;
     margin-top: 6px;
-}
-.metric-delta-negative {
-    color: #dc2626;
+    font-size: 0.85rem;
+}}
+.metric-delta-negative {{
+    color: #FFB3B3;
     font-weight: 600;
     margin-top: 6px;
-}
+    font-size: 0.85rem;
+}}
 
-/* Tabs Styling */
-.stTabs { margin-bottom: 20px; }
-.stTabs [role="tablist"] {
-    border-bottom: 2px solid #cbd5e1;
+/* ---- Tabs ---- */
+.stTabs {{ margin-bottom: 20px; }}
+.stTabs [role="tablist"] {{
+    border-bottom: 3px solid {AHF_RED};
     display: flex;
-    gap: 8px;
-}
-.stTabs [role="tab"] {
-    padding: 8px 20px;
-    border-radius: 12px 12px 0 0;
-    background-color: #f1f5f9;
-    color: #1e40af;
+    gap: 6px;
+}}
+.stTabs [role="tab"] {{
+    padding: 8px 22px;
+    border-radius: 10px 10px 0 0;
+    background-color: #e8e8e8;
+    color: {AHF_BLACK};
     font-weight: 600;
     font-size: 1rem;
     transition: background 0.3s, transform 0.2s;
-}
-.stTabs [role="tab"]:hover {
-    background-color: #e2e8f0;
+}}
+.stTabs [role="tab"]:hover {{
+    background-color: #FFE0E0;
+    color: {AHF_RED};
     transform: translateY(-2px);
-}
-.stTabs [role="tab"][aria-selected="true"] {
-    background-color: #3b82f6;
-    color: white;
-    border-bottom: 2px solid #3b82f6;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
+}}
+.stTabs [role="tab"][aria-selected="true"] {{
+    background-color: {AHF_RED};
+    color: {AHF_WHITE};
+    border-bottom: 3px solid {AHF_RED};
+    box-shadow: 0 4px 12px rgba(204,0,0,0.3);
+}}
 
-/* Expander Styling */
-.stExpander > div:first-child {
-    background-color: #f1f5f9;
-    border-radius: 12px;
+/* ---- Expander ---- */
+.stExpander > div:first-child {{
+    background-color: {AHF_WHITE};
+    border-left: 4px solid {AHF_RED};
+    border-radius: 0 10px 10px 0;
     padding: 10px 14px;
     margin-bottom: 12px;
-}
-.stExpander > div:first-child:hover {
-    background-color: #e2e8f0;
-}
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}}
+.stExpander > div:first-child:hover {{
+    background-color: #FFF5F5;
+}}
 
-/* Tab Pane Styling */
-.stTabPane {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-}
+/* ---- Sidebar ---- */
+[data-testid="stSidebar"] {{
+    background-color: {AHF_BLACK} !important;
+}}
+[data-testid="stSidebar"] * {{
+    color: {AHF_WHITE} !important;
+}}
+[data-testid="stSidebar"] .stMultiSelect > div {{
+    background-color: #2a2a2a !important;
+    border-color: {AHF_RED} !important;
+}}
 
-/* Footer Styling */
-footer { visibility: hidden; }
-.custom-footer {
+/* ---- Footer ---- */
+footer {{ visibility: hidden; }}
+.custom-footer {{
     text-align: center;
-    color: #64748b;
-    font-size: 0.9rem;
+    color: {AHF_MID_GREY};
+    font-size: 0.85rem;
     margin-top: 40px;
     padding: 20px 0;
-}
+    border-top: 2px solid {AHF_RED};
+}}
+.ahf-logo-text {{
+    color: {AHF_RED};
+    font-weight: 800;
+    font-size: 1.1rem;
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -134,7 +188,8 @@ def metric_card(title, value, delta=None):
     delta_html = ""
     if delta is not None:
         color_class = "metric-delta-positive" if delta >= 0 else "metric-delta-negative"
-        delta_html = f'<div class="{color_class}">{delta:+,}</div>'
+        arrow = "▲" if delta >= 0 else "▼"
+        delta_html = f'<div class="{color_class}">{arrow} {delta:+,}</div>'
     st.markdown(
         f"""
         <div class="metric-card">
@@ -147,7 +202,7 @@ def metric_card(title, value, delta=None):
     )
 
 # ---------------------------- Gauge Chart Function ----------------------------
-def plot_gauge(title, actual, target, color):
+def plot_gauge(title, actual, target, color=AHF_RED):
     pct = round((actual / target) * 100, 1)
     remaining = max(target - actual, 0)
 
@@ -159,27 +214,27 @@ def plot_gauge(title, actual, target, color):
             'valueformat': ','
         },
         title={
-            'text': f"<b>{title}</b><br><span style='font-size:15px;color:#6b7280'>{pct}% Achieved</span>",
-            'font': {'size': 20, 'color': "#111827"}
+            'text': f"<b>{title}</b><br><span style='font-size:15px;color:{AHF_MID_GREY}'>{pct}% Achieved</span>",
+            'font': {'size': 20, 'color': AHF_BLACK}
         },
         gauge={
             'axis': {
                 'range': [0, target],
                 'tickwidth': 1,
                 'tickcolor': "#d1d5db",
-                'tickfont': {'size': 11, 'color': "#6b7280"},
+                'tickfont': {'size': 11, 'color': AHF_MID_GREY},
                 'nticks': 5
             },
             'bar': {'color': color, 'thickness': 0.35},
-            'bgcolor': "white",
+            'bgcolor': AHF_WHITE,
             'borderwidth': 0,
             'steps': [
-                {'range': [0, target * 0.5],  'color': "#f3f4f6"},
-                {'range': [target * 0.5, target * 0.8], 'color': "#e5e7eb"},
-                {'range': [target * 0.8, target], 'color': "#d1fae5"}
+                {'range': [0, target * 0.5],  'color': "#f5f5f5"},
+                {'range': [target * 0.5, target * 0.8], 'color': "#ffe0e0"},
+                {'range': [target * 0.8, target], 'color': "#ffb3b3"}
             ],
             'threshold': {
-                'line': {'color': "#ef4444", 'width': 3},
+                'line': {'color': AHF_DARK_RED, 'width': 3},
                 'thickness': 0.75,
                 'value': target
             }
@@ -189,12 +244,29 @@ def plot_gauge(title, actual, target, color):
     fig.update_layout(
         height=300,
         margin=dict(t=80, b=30, l=30, r=30),
-        paper_bgcolor="white",
+        paper_bgcolor=AHF_WHITE,
         font={'family': "Arial"}
     )
     return fig, pct, remaining
 
+# ---------------------------- Chart Layout Helper ----------------------------
+def ahf_layout(fig, title="", xaxis_title="", yaxis_title=""):
+    fig.update_layout(
+        title=dict(text=title, font=dict(color=AHF_BLACK, size=16, family="Arial")),
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        paper_bgcolor=AHF_WHITE,
+        plot_bgcolor="#FAFAFA",
+        font=dict(family="Arial", color=AHF_GREY_TEXT),
+        xaxis=dict(gridcolor="#EEEEEE", linecolor="#CCCCCC"),
+        yaxis=dict(gridcolor="#EEEEEE", linecolor="#CCCCCC"),
+    )
+    return fig
+
 # ---------------------------- Sidebar Filter ----------------------------
+st.sidebar.markdown(f"<div style='text-align:center;padding:10px 0 20px'>"
+                    f"<span class='ahf-logo-text'>⚕ AHF Dashboard</span></div>",
+                    unsafe_allow_html=True)
 st.sidebar.header("Filters")
 selected_months = st.sidebar.multiselect(
     "Select Months",
@@ -212,23 +284,18 @@ tab1, tab2 = st.tabs(["🩺 Prevention", "💊 Care & Treatment"])
 with tab1:
     st.header("Prevention Metrics")
 
-    total_tested = filtered_df['Total_tested'].sum()
+    total_tested    = filtered_df['Total_tested'].sum()
     total_positives = filtered_df['Positives'].sum()
-    avg_yield = (total_positives / total_tested * 100) if total_tested > 0 else 0
-
-    total_ict = filtered_df['ICT_tested'].sum()
-    ict_percent = (total_ict / total_tested * 100) if total_tested > 0 else 0
-
-    total_condoms = filtered_df['condom_distribution'].sum()
-
-    total_linked = filtered_df['Linked'].sum()
+    avg_yield       = (total_positives / total_tested * 100) if total_tested > 0 else 0
+    total_ict       = filtered_df['ICT_tested'].sum()
+    ict_percent     = (total_ict / total_tested * 100) if total_tested > 0 else 0
+    total_condoms   = filtered_df['condom_distribution'].sum()
+    total_linked    = filtered_df['Linked'].sum()
     linkage_percent = (total_linked / total_positives * 100) if total_positives > 0 else 0
-
-    testing_target = 1673 * len(filtered_df)
-    testing_delta = total_tested - testing_target
+    testing_target  = 1673 * len(filtered_df)
+    testing_delta   = int(total_tested - testing_target)
 
     col1, col2, col3, col4, col5 = st.columns(5)
-
     with col1:
         metric_card("Total Tested", f"{total_tested:,}", testing_delta)
     with col2:
@@ -243,28 +310,15 @@ with tab1:
     # Testing Trends
     with st.expander("📈 HIV Testing Trends by Month", expanded=True):
         fig1 = px.bar(
-            filtered_df,
-            x='Month',
-            y='Total_tested',
-            text='Total_tested',
+            filtered_df, x='Month', y='Total_tested', text='Total_tested',
             title="HIV Testing Trends by Month",
-            color_discrete_sequence=px.colors.sequential.Teal
+            color_discrete_sequence=[AHF_RED]
         )
-        fig1.update_traces(textposition='outside')
-        fig1.add_hline(
-            y=1673,
-            line_dash="dash",
-            line_color="red",
-            line_width=3,
-            annotation_text="Target = 1,673",
-            annotation_position="top left"
-        )
-        fig1.update_layout(
-            yaxis_title="Number Tested",
-            xaxis_title="Month",
-            uniformtext_minsize=8,
-            uniformtext_mode='hide'
-        )
+        fig1.update_traces(textposition='outside', marker_line_color=AHF_DARK_RED, marker_line_width=1)
+        fig1.add_hline(y=1673, line_dash="dash", line_color=AHF_BLACK, line_width=2,
+                       annotation_text="Target = 1,673", annotation_position="top left",
+                       annotation_font_color=AHF_BLACK)
+        ahf_layout(fig1, yaxis_title="Number Tested", xaxis_title="Month")
         st.plotly_chart(fig1, use_container_width=True)
 
     # Positives & Yield
@@ -274,18 +328,23 @@ with tab1:
         fig2 = go.Figure()
         fig2.add_trace(go.Bar(
             x=filtered_df['Month'], y=filtered_df['Positives'], name="Positives",
-            text=filtered_df['Positives'], textposition='outside'
+            text=filtered_df['Positives'], textposition='outside',
+            marker_color=AHF_RED, marker_line_color=AHF_DARK_RED, marker_line_width=1
         ))
         fig2.add_trace(go.Scatter(
             x=filtered_df['Month'], y=filtered_df['Yield'], name="Yield (%)",
             yaxis='y2', mode='lines+markers+text',
             text=filtered_df['Yield'].round(1).astype(str) + "%",
-            textposition='top center'
+            textposition='top center',
+            line=dict(color=AHF_BLACK, width=2),
+            marker=dict(color=AHF_BLACK, size=8)
         ))
         fig2.update_layout(
-            yaxis=dict(title="Positives"),
+            yaxis=dict(title="Positives", gridcolor="#EEEEEE"),
             yaxis2=dict(title="Yield (%)", overlaying='y', side='right'),
-            title="Positives and Yield by Month"
+            title="Positives and Yield by Month",
+            paper_bgcolor=AHF_WHITE, plot_bgcolor="#FAFAFA",
+            font=dict(family="Arial", color=AHF_GREY_TEXT)
         )
         st.plotly_chart(fig2, use_container_width=True)
 
@@ -294,30 +353,19 @@ with tab1:
         filtered_df['ICT_percentage'] = (
             filtered_df['ICT_tested'] / filtered_df['Total_tested'] * 100
         ).replace([np.inf, -np.inf], 0).fillna(0)
-
         fig3 = px.line(
-            filtered_df,
-            x='Month',
-            y='ICT_percentage',
-            markers=True,
+            filtered_df, x='Month', y='ICT_percentage', markers=True,
             text=filtered_df['ICT_percentage'].round(1).astype(str) + "%",
             title="ICT Testing Percentage by Month",
-            color_discrete_sequence=['#3b82f6']
+            color_discrete_sequence=[AHF_RED]
         )
-        fig3.update_traces(textposition='top center')
-        fig3.add_hline(
-            y=30,
-            line_dash="dash",
-            line_color="red",
-            line_width=3,
-            annotation_text="Target = 30%",
-            annotation_position="top left"
-        )
-        fig3.update_layout(
-            yaxis_title="ICT Percentage (%)",
-            xaxis_title="Month",
-            yaxis_range=[0, 100]
-        )
+        fig3.update_traces(textposition='top center', line=dict(width=2.5),
+                           marker=dict(size=9, color=AHF_RED))
+        fig3.add_hline(y=30, line_dash="dash", line_color=AHF_BLACK, line_width=2,
+                       annotation_text="Target = 30%", annotation_position="top left",
+                       annotation_font_color=AHF_BLACK)
+        ahf_layout(fig3, yaxis_title="ICT Percentage (%)", xaxis_title="Month")
+        fig3.update_layout(yaxis_range=[0, 100])
         st.plotly_chart(fig3, use_container_width=True)
 
     # ICT Testing Types
@@ -325,32 +373,23 @@ with tab1:
         df_long = filtered_df.melt(
             id_vars='Month',
             value_vars=['ICT_tested', 'APN_ict', 'SNS'],
-            var_name='Testing_Type',
-            value_name='Count'
+            var_name='Testing_Type', value_name='Count'
         )
         fig4 = px.bar(
-            df_long,
-            x='Month',
-            y='Count',
-            color='Testing_Type',
-            barmode='group',
-            text='Count',
+            df_long, x='Month', y='Count', color='Testing_Type',
+            barmode='group', text='Count',
             title="ICT Testing Types",
-            color_discrete_sequence=px.colors.qualitative.Set2
+            color_discrete_map={
+                'ICT_tested': AHF_RED,
+                'APN_ict':    AHF_BLACK,
+                'SNS':        "#FF6666"
+            }
         )
         fig4.update_traces(textposition='outside')
-        fig4.add_hline(
-            y=502,
-            line_dash="dash",
-            line_color="red",
-            line_width=3,
-            annotation_text="Target = 502",
-            annotation_position="top left"
-        )
-        fig4.update_layout(
-            yaxis_title="Number Tested",
-            xaxis_title="Month"
-        )
+        fig4.add_hline(y=502, line_dash="dash", line_color=AHF_DARK_RED, line_width=2,
+                       annotation_text="Target = 502", annotation_position="top left",
+                       annotation_font_color=AHF_DARK_RED)
+        ahf_layout(fig4, yaxis_title="Number Tested", xaxis_title="Month")
         st.plotly_chart(fig4, use_container_width=True)
 
     # Linkage
@@ -360,9 +399,11 @@ with tab1:
             filtered_df, x='Month', y='Linkage', markers=True,
             text=filtered_df['Linkage'].round(1).astype(str) + "%",
             title="Linkage to Care (%)",
-            color_discrete_sequence=['#16a34a']
+            color_discrete_sequence=[AHF_RED]
         )
-        fig5.update_traces(textposition='top center')
+        fig5.update_traces(textposition='top center', line=dict(width=2.5),
+                           marker=dict(size=9))
+        ahf_layout(fig5, yaxis_title="Linkage (%)", xaxis_title="Month")
         st.plotly_chart(fig5, use_container_width=True)
 
     # Condom Table
@@ -378,14 +419,13 @@ with tab1:
 with tab2:
     st.header("Care and Treatment Metrics")
 
-    actual_census = 6854
-    net_growth = (
+    actual_census  = 6854
+    net_growth     = (
         filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']
     ).sum() - (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']).sum()
-
-    total_ltfu = filtered_df['LTFU'].sum()
+    total_ltfu     = filtered_df['LTFU'].sum()
     total_attrition = (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']).sum()
-    ltfu_percent = (total_ltfu / total_attrition * 100) if total_attrition != 0 else 0
+    ltfu_percent   = (total_ltfu / total_attrition * 100) if total_attrition != 0 else 0
     avg_suppression = filtered_df['suppression'].mean()
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -419,9 +459,14 @@ with tab2:
             filtered_df, x='Month', y='Net_Growth', markers=True,
             text=filtered_df['Net_Growth'],
             title="Net Growth by Month",
-            color_discrete_sequence=['#3b82f6']
+            color_discrete_sequence=[AHF_RED]
         )
-        fig6.update_traces(textposition='top center')
+        fig6.update_traces(
+            textposition='top center',
+            line=dict(color=AHF_DARK_RED, width=2.5),
+            fillcolor="rgba(204,0,0,0.15)"
+        )
+        ahf_layout(fig6, yaxis_title="Net Growth", xaxis_title="Month")
         st.plotly_chart(fig6, use_container_width=True)
 
     # Attrition
@@ -432,42 +477,41 @@ with tab2:
             y=['LTFU', 'TO', 'Dead', 'Total_Attrition'],
             barmode='group', text_auto=True,
             title="Attrition by Month",
-            color_discrete_sequence=px.colors.qualitative.Set3
+            color_discrete_map={
+                'LTFU':           AHF_RED,
+                'TO':             AHF_BLACK,
+                'Dead':           "#FF6666",
+                'Total_Attrition': "#808080"
+            }
         )
         fig7.update_traces(textposition='outside')
+        ahf_layout(fig7, yaxis_title="Count", xaxis_title="Month")
         st.plotly_chart(fig7, use_container_width=True)
 
     # Viral Coverage and Suppression
     with st.expander("Viral Coverage and Suppression by Month"):
         fig8 = px.line(
-            filtered_df,
-            x='Month',
+            filtered_df, x='Month',
             y=['suppression', 'VL_coverage'],
             markers=True,
             title="Viral Coverage and Suppression by Month",
             color_discrete_map={
-                'suppression': '#16a34a',
-                'VL_coverage': '#2563eb'
+                'suppression': AHF_RED,
+                'VL_coverage': AHF_BLACK
             }
         )
         fig8.update_traces(
             mode='lines+markers+text',
             texttemplate='%{y:.1f}%',
-            textposition='top center'
+            textposition='top center',
+            line=dict(width=2.5),
+            marker=dict(size=9)
         )
-        fig8.add_hline(
-            y=95,
-            line_dash="dash",
-            line_color="red",
-            annotation_text="Target 95%",
-            annotation_position="top left"
-        )
-        fig8.update_layout(
-            xaxis_title="Month",
-            yaxis_title="Percentage (%)",
-            legend_title="Indicator",
-            hovermode="x unified",
-        )
+        fig8.add_hline(y=95, line_dash="dash", line_color=AHF_DARK_RED, line_width=2,
+                       annotation_text="Target 95%", annotation_position="top left",
+                       annotation_font_color=AHF_DARK_RED)
+        ahf_layout(fig8, xaxis_title="Month", yaxis_title="Percentage (%)")
+        fig8.update_layout(legend_title="Indicator", hovermode="x unified")
         fig8.for_each_trace(lambda t: t.update(name=t.name.capitalize()))
         st.plotly_chart(fig8, use_container_width=True)
 
@@ -476,7 +520,7 @@ with tab2:
 
     with col_g1:
         with st.expander("🎯 Census Progress", expanded=False):
-            fig, pct, remaining = plot_gauge("Census Progress", actual_census, 7098, "#7c3aed")
+            fig, pct, remaining = plot_gauge("Census Progress", actual_census, 7098, AHF_RED)
             st.plotly_chart(fig, use_container_width=True)
             st.progress(min(int(pct), 100))
             c1, c2 = st.columns(2)
@@ -485,7 +529,7 @@ with tab2:
 
     with col_g2:
         with st.expander("🎯 CRPDDP Progress", expanded=False):
-            fig, pct, remaining = plot_gauge("CRPDDP Progress", 322, 600, "#16a34a")
+            fig, pct, remaining = plot_gauge("CRPDDP Progress", 322, 600, AHF_BLACK)
             st.plotly_chart(fig, use_container_width=True)
             st.progress(min(int(pct), 100))
             c1, c2 = st.columns(2)
@@ -494,8 +538,9 @@ with tab2:
 
 # ---------------------------- Footer ----------------------------
 st.markdown("---")
-st.markdown("""
+st.markdown(f"""
 <div class="custom-footer">
-© 2026 Rich Data Analytics
+    <span class="ahf-logo-text">⚕ AIDS Healthcare Foundation</span><br>
+    © 2026 Rich Data Analytics &nbsp;|&nbsp; Powered by AHF Uganda Program
 </div>
 """, unsafe_allow_html=True)
