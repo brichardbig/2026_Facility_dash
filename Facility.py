@@ -265,7 +265,7 @@ def ahf_layout(fig, title="", xaxis_title="", yaxis_title=""):
 
 # ---------------------------- Sidebar Filter ----------------------------
 st.sidebar.markdown(f"<div style='text-align:center;padding:10px 0 20px'>"
-                    f"<span class='ahf-logo-text'>⚕ AHF Dashboard</span></div>",
+                    f"<span class='ahf-logo-text'>⚕ CUFH - Naguru Dashboard</span></div>",
                     unsafe_allow_html=True)
 st.sidebar.header("Filters")
 selected_months = st.sidebar.multiselect(
