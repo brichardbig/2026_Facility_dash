@@ -559,7 +559,7 @@ with col_g2:
         st.plotly_chart(
             plot_gauge(
                 "CRPDDP Progress",
-                298,
+                322,
                 600,
                 "#16a34a"
             ),
