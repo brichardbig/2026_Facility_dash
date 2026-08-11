@@ -419,7 +419,7 @@ with tab1:
 with tab2:
     st.header("Care and Treatment Metrics")
 
-    actual_census  = 6913
+    actual_census  = 6930
     net_growth     = (
         filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']
     ).sum() - (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']).sum()
