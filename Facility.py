@@ -419,7 +419,7 @@ with tab1:
 with tab2:
     st.header("Care and Treatment Metrics")
 
-    actual_census  = 6869
+    actual_census  = 6913
     net_growth     = (
         filtered_df['Newly_diagnosed'] + filtered_df['TI'] + filtered_df['Returned']
     ).sum() - (filtered_df['LTFU'] + filtered_df['TO'] + filtered_df['Dead']).sum()
@@ -529,11 +529,11 @@ with tab2:
 
     with col_g2:
         with st.expander("🎯 CRPDDP Progress", expanded=False):
-            fig, pct, remaining = plot_gauge("CRPDDP Progress", 356, 600, AHF_BLACK)
+            fig, pct, remaining = plot_gauge("CRPDDP Progress", 402, 600, AHF_BLACK)
             st.plotly_chart(fig, use_container_width=True)
             st.progress(min(int(pct), 100))
             c1, c2 = st.columns(2)
-            c1.metric("Actual", "322")
+            c1.metric("Actual", "402")
             c2.metric("Remaining", f"{remaining:,}")
 
 # ---------------------------- Footer ----------------------------
